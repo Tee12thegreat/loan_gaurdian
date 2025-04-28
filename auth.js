@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sample user data (in a real app, this would come from a server)
     const users = [
-        { email: "admin@loanguardian.com", password: "admin123", role: "admin", name: "Admin User" },
+        { email: "admin@loanguardian", password: "admin123", role: "admin", name: "Tee" },
         { email: "officer@loanguardian.com", password: "officer123", role: "loan-officer", name: "Loan Officer" },
         { email: "risk@loanguardian.com", password: "risk123", role: "risk-analyst", name: "Risk Analyst" },
         { email: "fraud@loanguardian.com", password: "fraud123", role: "fraud-analyst", name: "Fraud Analyst" },
