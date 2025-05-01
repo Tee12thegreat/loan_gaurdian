@@ -101,6 +101,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Navigation handling - MODIFIED FOR ROOT FOLDER
+    const navLinks = document.querySelectorAll('.nav-menu li a');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('href').substring(1);
+            
+            if (page) {
+                window.location.href = `${page}.html`;
+            }
+        });
+    });
+    
     // Chart.js Initialization
     // Effectiveness Chart
     const effectivenessCtx = document.getElementById('effectivenessChart').getContext('2d');

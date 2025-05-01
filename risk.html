@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Guardian | Loan Screening</title>
+    <title>Loan Guardian | Risk Assessment</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -54,67 +54,32 @@
             </header>
             
             <div class="content-area">
-                <h2>Loan Application Screening</h2>
+                <h2>Credit Risk Assessment</h2>
                 
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #E1F5FE;">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Applications Today</h3>
-                            <p>42</p>
-                        </div>
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <h3>Risk Distribution</h3>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #E8F5E9;">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Verified</h3>
-                            <p>28</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #FFF3E0;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Flagged</h3>
-                            <p>9</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #F3E5F5;">
-                            <i class="fas fa-ban"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Rejected</h3>
-                            <p>5</p>
-                        </div>
-                    </div>
+                    <canvas id="riskDistributionChart"></canvas>
                 </div>
                 
                 <div class="chart-container">
                     <div class="chart-title">
-                        <h3>Document Verification Status</h3>
+                        <h3>Default Probability by Segment</h3>
                     </div>
-                    <canvas id="docVerificationChart"></canvas>
+                    <canvas id="defaultProbabilityChart"></canvas>
                 </div>
                 
                 <div class="activity-card">
-                    <h3>Pending Applications</h3>
-                    <table id="applicationsTable">
+                    <h3>High Risk Applications</h3>
+                    <table id="highRiskTable">
                         <thead>
                             <tr>
                                 <th>App ID</th>
                                 <th>Applicant</th>
+                                <th>Risk Score</th>
                                 <th>Amount</th>
-                                <th>Documents</th>
-                                <th>Status</th>
+                                <th>Recommendation</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -127,6 +92,6 @@
         </main>
     </div>
     
-    <script src="/screening.js"></script>
+    <script src="/risk.js"></script>
 </body>
 </html>
