@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Guardian | Loan Screening</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Loan Guardian</h1>
+                <p>Fraud Detection System</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="user-profile">
+                    <div class="avatar">JD</div>
+                    <div class="user-info">
+                        <span class="username">USER</span>
+                        <span class="user-role">Admin</span>
+                    </div>
+                </div>
+                
+                <ul>
+                    <li class="active"><a href="#"><i class="icon-dashboard"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="icon-loan"></i> Loan Screening</a></li>
+                    <li><a href="#"><i class="icon-risk"></i> Risk Assessment</a></li>
+                    <li><a href="#"><i class="icon-monitor"></i> Disbursement Monitoring</a></li>
+                    <li><a href="#"><i class="icon-alert"></i> Alerts & Reports</a></li>
+                    
+                    <!-- Admin Only -->
+                    <li class="admin-only"><a href="#"><i class="icon-users"></i> User Management</a></li>
+                    <li class="admin-only"><a href="#"><i class="icon-settings"></i> System Settings</a></li>
+                    <li class="admin-only"><a href="#"><i class="icon-audit"></i> Audit Logs</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+         <!-- Main Content -->
+         <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search...">
+                    <button><i class="icon-search"></i></button>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-notification"><i class="icon-bell"></i></button>
+                    <button class="btn-logout">Logout</button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <h2>Loan Application Screening</h2>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #E1F5FE;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Applications Today</h3>
+                            <p>42</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #E8F5E9;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Verified</h3>
+                            <p>28</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #FFF3E0;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Flagged</h3>
+                            <p>9</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #F3E5F5;">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Rejected</h3>
+                            <p>5</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <h3>Document Verification Status</h3>
+                    </div>
+                    <canvas id="docVerificationChart"></canvas>
+                </div>
+                
+                <div class="activity-card">
+                    <h3>Pending Applications</h3>
+                    <table id="applicationsTable">
+                        <thead>
+                            <tr>
+                                <th>App ID</th>
+                                <th>Applicant</th>
+                                <th>Amount</th>
+                                <th>Documents</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="../js/screening.js"></script>
+</body>
+</html>
