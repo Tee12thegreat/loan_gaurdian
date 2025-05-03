@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management | Loan Guardian</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --lavender: #E6E6FA;
+            --dark-purple: #4B0082;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --text-dark: #333333;
+            --sidebar-width: 250px;
+            --success-green: #4CAF50;
+            --warning-orange: #FF9800;
+            --danger-red: #F44336;
+            --info-blue: #2196F3;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* ===== Layout Structure ===== */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        /* ===== Sidebar Components ===== */
+        .logo {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--lavender);
+        }
+
+        .logo h1 {
+            color: var(--dark-purple);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: var(--text-dark);
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 10px;
+        }
+
+        .nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li a i {
+            margin-right: 10px;
+            color: var(--dark-purple);
+        }
+
+        .nav-menu li a:hover {
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+        }
+
+        .nav-menu li.active a {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .nav-menu li.active a i {
+            color: white;
+        }
+
+        /* ===== Top Bar ===== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            min-width: 250px;
+        }
+
+        .search-bar input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-bar button {
+            padding: 10px 15px;
+            background-color: var(--dark-purple);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-notification {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            padding: 8px 15px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #d6d6f0;
+        }
+
+        /* ===== Content Area ===== */
+        .content-area h2 {
+            margin-bottom: 20px;
+            color: var(--dark-purple);
+        }
+
+        /* ===== User Management ===== */
+        .user-management-container {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .user-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-actions-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== Tables ===== */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* ===== Status Indicators ===== */
+        .status-active {
+            color: var(--success-green);
+            font-weight: 500;
+        }
+
+        .status-inactive {
+            color: var(--danger-red);
+            font-weight: 500;
+        }
+
+        .status-suspended {
+            color: var(--warning-orange);
+            font-weight: 500;
+        }
+
+        .status-pending {
+            color: var(--warning-orange);
+            font-weight: 500;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn i {
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a0069;
+        }
+
+        .btn-success {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #388e3c;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-orange);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-view {
+            background-color: var(--info-blue);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #1976d2;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        /* ===== Forms ===== */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--dark-purple);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* ===== Modal ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            color: var(--dark-purple);
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        /* ===== Responsive Adjustments ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .user-management-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-actions-container {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Loan Guardian</h1>
+                <p>Fraud Detection System</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="user-profile">
+                    <div class="avatar">AD</div>
+                    <div class="user-info">
+                        <span class="username">Admin User</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+                <ul>
+                    <li><a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#screening"><i class="fas fa-search-dollar"></i> Loan Screening</a></li>
+                    <li><a href="#risk"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
+                    <li><a href="#monitoring"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
+                    <li><a href="#alerts"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
+                    
+                    <!-- Admin Only -->
+                    <li class="active"><a href="#users"><i class="fas fa-users-cog"></i> User Management</a></li>
+                    <li><a href="#settings"><i class="fas fa-cog"></i> System Settings</a></li>
+                    <li><a href="#audit"><i class="fas fa-clipboard-list"></i> Audit Logs</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search users...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <h2>User Management</h2>
+                
+                <div class="user-management-container">
+                    <div class="user-management-header">
+                        <h3>System Users</h3>
+                        <div class="user-actions-container">
+                            <button class="btn btn-primary" id="addUserBtn">
+                                <i class="fas fa-user-plus"></i> Add User
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-warning">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="userTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Department</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New User</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <form id="userForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role" required>
+                            <option value="">Select Role</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Loan Officer">Loan Officer</option>
+                            <option value="Risk Analyst">Risk Analyst</option>
+                            <option value="Compliance Officer">Compliance Officer</option>
+                            <option value="Auditor">Auditor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="">Select Department</option>
+                            <option value="Credit Risk">Credit Risk</option>
+                            <option value="Fraud Prevention">Fraud Prevention</option>
+                            <option value="Regulatory">Regulatory</option>
+                            <option value="IT">IT</option>
+                            <option value="Management">Management</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // User Data
+        const users = [
+            {
+                id: 'USR-001',
+                firstName: 'Tendaishe',
+                lastName: 'Chitate',
+                email: 'tchitate@loanguardian.com',
+                role: 'Loan Officer',
+                department: 'Credit Risk',
+                lastLogin: '2023-06-15 09:30',
+                status: 'Active'
+            },
+            {
+                id: 'USR-002',
+                firstName: 'Alice',
+                lastName: 'Chikata',
+                email: 'achikata@loanguardian.com',
+                role: 'Risk Analyst',
+                department: 'Fraud Prevention',
+                lastLogin: '2023-06-14 14:15',
+                status: 'Active'
+            },
+            {
+                id: 'USR-003',
+                firstName: 'Mziyanda',
+                lastName: 'Moyo',
+                email: 'mmoyo@loanguardian.com',
+                role: 'Compliance Officer',
+                department: 'Regulatory',
+                lastLogin: '2023-06-10 11:45',
+                status: 'Suspended'
+            },
+            {
+                id: 'USR-004',
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'jdoe@loanguardian.com',
+                role: 'Auditor',
+                department: 'Internal Audit',
+                lastLogin: '2023-06-12 16:20',
+                status: 'Active'
+            },
+            {
+                id: 'USR-005',
+                firstName: 'Sarah',
+                lastName: 'Smith',
+                email: 'ssmith@loanguardian.com',
+                role: 'Loan Officer',
+                department: 'Credit Risk',
+                lastLogin: '2023-06-11 10:10',
+                status: 'Pending'
+            }
+        ];
+
+        // DOM Elements
+        const userTableBody = document.getElementById('userTableBody');
+        const userModal = document.getElementById('userModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const userForm = document.getElementById('userForm');
+        const addUserBtn = document.getElementById('addUserBtn');
+        const modalClose = document.getElementById('modalClose');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Render Users Table
+        function renderUsers() {
+            userTableBody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.department}</td>
+                    <td>${user.lastLogin}</td>
+                    <td class="status-${user.status.toLowerCase()}">${user.status}</td>
+                    <td>
+                        <button class="btn btn-sm btn-view" data-id="${user.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-warning" data-id="${user.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        ${user.status === 'Active' ? 
+                            `<button class="btn btn-sm btn-danger" data-id="${user.id}">
+                                <i class="fas fa-user-slash"></i> Suspend
+                            </button>` : 
+                            `<button class="btn btn-sm btn-success" data-id="${user.id}">
+                                <i class="fas fa-user-check"></i> Activate
+                            </button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Open Modal
+        function openModal(title) {
+            modalTitle.textContent = title;
+            userModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close Modal
+        function closeModal() {
+            userModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            userForm.reset();
+        }
+
+        // Event Listeners
+        addUserBtn.addEventListener('click', () => {
+            openModal('Add New User');
+        });
+
+        modalClose.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === userModal) {
+                closeModal();
+            }
+        });
+
+        // Form Submission
+        userForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Here you would typically send the data to a server
+            alert('User saved successfully!');
+            closeModal();
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUsers();
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const userId = e.target.getAttribute('data-id');
+                    const user = users.find(u => u.id === userId);
+                    alert(`Viewing user: ${user.firstName} ${user.lastName}\nEmail: ${user.email}\nRole: ${user.role}`);
+                });
+            });
+            
+            document.querySelectorAll('.btn-warning').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const userId = e.target.getAttribute('data-id');
+                    openModal('Edit User');
+                    // Here you would populate the form with user data
+                    const user = users.find(u => u.id === userId);
+                    document.getElementById('firstName').value = user.firstName;
+                    document.getElementById('lastName').value = user.lastName;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('role').value = user.role;
+                    document.getElementById('department').value = user.department;
+                    document.getElementById('status').value = user.status;
+                });
+            });
+            
+            document.querySelectorAll('.btn-danger, .btn-success').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const userId = e.target.getAttribute('data-id');
+                    const user = users.find(u => u.id === userId);
+                    const action = user.status === 'Active' ? 'suspend' : 'activate';
+                    if (confirm(`Are you sure you want to ${action} ${user.firstName} ${user.lastName}?`)) {
+                        // Here you would typically update the user status on the server
+                        user.status = action === 'suspend' ? 'Suspended' : 'Active';
+                        renderUsers();
+                        alert(`User ${action}ed successfully!`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
