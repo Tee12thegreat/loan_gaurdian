@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts & Reports | Loan Guardian</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --lavender: #E6E6FA;
+            --dark-purple: #4B0082;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --text-dark: #333333;
+            --sidebar-width: 250px;
+            --success-green: #4CAF50;
+            --warning-orange: #FF9800;
+            --danger-red: #F44336;
+            --info-blue: #2196F3;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* ===== Layout Structure ===== */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        /* ===== Sidebar Components ===== */
+        .logo {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--lavender);
+        }
+
+        .logo h1 {
+            color: var(--dark-purple);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: var(--text-dark);
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 10px;
+        }
+
+        .nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li a i {
+            margin-right: 10px;
+            color: var(--dark-purple);
+        }
+
+        .nav-menu li a:hover {
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+        }
+
+        .nav-menu li.active a {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .nav-menu li.active a i {
+            color: white;
+        }
+
+        /* ===== Top Bar ===== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            min-width: 250px;
+        }
+
+        .search-bar input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-bar button {
+            padding: 10px 15px;
+            background-color: var(--dark-purple);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-notification {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            padding: 8px 15px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #d6d6f0;
+        }
+
+        /* ===== Content Area ===== */
+        .content-area h2 {
+            margin-bottom: 20px;
+            color: var(--dark-purple);
+        }
+
+        /* ===== Alerts Container ===== */
+        .alerts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .alerts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fraud-alerts, .system-reports {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            color: var(--dark-purple);
+            font-size: 18px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== Alert Items ===== */
+        .alert-item {
+            background-color: var(--white);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--danger-red);
+            transition: transform 0.3s;
+        }
+
+        .alert-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .alert-info {
+            flex: 1;
+        }
+
+        .alert-info h4 {
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .alert-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .alert-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .alert-meta i {
+            font-size: 12px;
+        }
+
+        .alert-severity {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .severity-high {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
+
+        .severity-medium {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: var(--warning-orange);
+            border: 1px solid var(--warning-orange);
+        }
+
+        .severity-low {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        /* ===== Report Metrics ===== */
+        .report-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-card h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-purple);
+        }
+
+        .metric-trend {
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .trend-up {
+            color: var(--success-green);
+        }
+
+        .trend-down {
+            color: var(--danger-red);
+        }
+
+        /* ===== Alert Charts ===== */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            margin-bottom: 15px;
+            color: var(--dark-purple);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn i {
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a0069;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-view {
+            background-color: var(--info-blue);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #1976d2;
+        }
+
+        .btn-resolve {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .btn-resolve:hover {
+            background-color: #388e3c;
+        }
+
+        /* ===== Tabs ===== */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--dark-purple);
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--dark-purple);
+            color: var(--dark-purple);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== Responsive Adjustments ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .alert-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .alert-severity {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            
+            .report-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Loan Guardian</h1>
+                <p>Fraud Detection System</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="user-profile">
+                    <div class="avatar">AD</div>
+                    <div class="user-info">
+                        <span class="username">Admin User</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+                <ul>
+                    <li><a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#screening"><i class="fas fa-search-dollar"></i> Loan Screening</a></li>
+                    <li><a href="#risk"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
+                    <li><a href="#monitoring"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
+                    <li class="active"><a href="#alerts"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
+                    
+                    <!-- Admin Only -->
+                    <li class="admin-only"><a href="#users"><i class="fas fa-users-cog"></i> User Management</a></li>
+                    <li class="admin-only"><a href="#settings"><i class="fas fa-cog"></i> System Settings</a></li>
+                    <li class="admin-only"><a href="#audit"><i class="fas fa-clipboard-list"></i> Audit Logs</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search alerts...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+                    <button class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <h2>Alerts & Reports</h2>
+                
+                <!-- Tabs for different views -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="alerts">Fraud Alerts</div>
+                    <div class="tab" data-tab="reports">Analytics Reports</div>
+                    <div class="tab" data-tab="history">Alert History</div>
+                </div>
+                
+                <!-- Alerts Tab -->
+                <div class="tab-content active" id="alerts">
+                    <div class="alerts-container">
+                        <!-- Fraud Alerts Section -->
+                        <div class="fraud-alerts">
+                            <div class="section-header">
+                                <h3>Active Fraud Alerts</h3>
+                                <div class="section-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-filter"></i> Filter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="alertsList">
+                                <!-- Alerts will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- System Reports Section -->
+                        <div class="system-reports">
+                            <div class="section-header">
+                                <h3>Fraud Metrics</h3>
+                                <div class="section-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="report-metrics">
+                                <div class="metric-card">
+                                    <h4>Total Fraud Alerts</h4>
+                                    <div class="metric-value">23</div>
+                                    <div class="metric-trend trend-up">
+                                        <i class="fas fa-arrow-up"></i> 12% from last week
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <h4>Fraud Prevention Rate</h4>
+                                    <div class="metric-value">94%</div>
+                                    <div class="metric-trend trend-up">
+                                        <i class="fas fa-arrow-up"></i> 3% improvement
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <h4>High-Risk Applications</h4>
+                                    <div class="metric-value severity-high">15</div>
+                                    <div class="metric-trend trend-down">
+                                        <i class="fas fa-arrow-down"></i> 5% reduction
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <h4>Avg. Resolution Time</h4>
+                                    <div class="metric-value">2.4h</div>
+                                    <div class="metric-trend trend-down">
+                                        <i class="fas fa-arrow-down"></i> 30min faster
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Alert Trends Chart -->
+                            <div class="chart-container">
+                                <div class="chart-title">
+                                    <h3>Alert Trends</h3>
+                                    <div class="chart-actions">
+                                        <button class="chart-btn active" data-period="week">Week</button>
+                                        <button class="chart-btn" data-period="month">Month</button>
+                                        <button class="chart-btn" data-period="year">Year</button>
+                                    </div>
+                                </div>
+                                <canvas id="alertTrendsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reports Tab -->
+                <div class="tab-content" id="reports">
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            <h3>Fraud Types Breakdown</h3>
+                        </div>
+                        <canvas id="fraudTypesChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            <h3>Alert Resolution Rate</h3>
+                        </div>
+                        <canvas id="resolutionRateChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            <h3>False Positive Analysis</h3>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-download"></i> Download Report
+                            </button>
+                        </div>
+                        <canvas id="falsePositiveChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- History Tab -->
+                <div class="tab-content" id="history">
+                    <div class="table-container">
+                        <div class="chart-title">
+                            <h3>Resolved Alert History</h3>
+                            <div class="section-actions">
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                        <table id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Alert Type</th>
+                                    <th>Applicant</th>
+                                    <th>Date Detected</th>
+                                    <th>Date Resolved</th>
+                                    <th>Resolution Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Alert Data
+        const fraudAlerts = [
+            {
+                id: 'AL-2024-001',
+                type: 'Fake Documents',
+                applicant: 'John Moyo (APP-2024-015)',
+                severity: 'High',
+                date: '2024-02-15 09:30',
+                details: 'Submitted documents show signs of tampering with identification numbers.',
+                status: 'Pending'
+            },
+            {
+                id: 'AL-2024-002',
+                type: 'Identity Theft',
+                applicant: 'Sarah Ndlovu (APP-2024-023)',
+                severity: 'Medium',
+                date: '2024-02-10 14:15',
+                details: 'Applicant photo doesn\'t match ID document facial recognition analysis.',
+                status: 'Pending'
+            },
+            {
+                id: 'AL-2024-003',
+                type: 'Income Misrepresentation',
+                applicant: 'David Sibanda (APP-2024-007)',
+                severity: 'Low',
+                date: '2024-02-05 11:45',
+                details: 'Reported income significantly higher than industry average for stated occupation.',
+                status: 'Pending'
+            },
+            {
+                id: 'AL-2024-004',
+                type: 'Duplicate Application',
+                applicant: 'Tendai Chitate (APP-2024-012)',
+                severity: 'High',
+                date: '2024-02-18 16:20',
+                details: 'Same applicant with slightly modified personal details detected across 3 applications.',
+                status: 'Pending'
+            }
+        ];
+
+        const resolvedAlerts = [
+            {
+                id: 'AL-2024-000',
+                type: 'Bank Statement Fraud',
+                applicant: 'Alice Chikata (APP-2024-005)',
+                severity: 'High',
+                dateDetected: '2024-01-28 10:15',
+                dateResolved: '2024-01-29 14:30',
+                resolutionTime: '28h 15m',
+                status: 'Confirmed Fraud'
+            },
+            {
+                id: 'AL-2024-001',
+                type: 'Employment Verification',
+                applicant: 'Brian Moyo (APP-2024-008)',
+                severity: 'Medium',
+                dateDetected: '2024-01-25 13:45',
+                dateResolved: '2024-01-26 09:20',
+                resolutionTime: '19h 35m',
+                status: 'False Positive'
+            }
+        ];
+
+        // Render Alerts
+        function renderAlerts() {
+            const alertsList = document.getElementById('alertsList');
+            alertsList.innerHTML = fraudAlerts.map(alert => `
+                <div class="alert-item">
+                    <div class="alert-info">
+                        <h4>${alert.type} <small>(${alert.id})</small></h4>
+                        <div class="alert-meta">
+                            <span><i class="fas fa-user"></i> ${alert.applicant}</span>
+                            <span><i class="fas fa-clock"></i> ${alert.date}</span>
+                        </div>
+                        <p class="alert-desc">${alert.details}</p>
+                    </div>
+                    <div class="alert-severity severity-${alert.severity.toLowerCase()}">
+                        ${alert.severity} Risk
+                    </div>
+                    <div class="alert-actions">
+                        <button class="btn btn-sm btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-resolve">
+                            <i class="fas fa-check"></i> Resolve
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render History Table
+        function renderHistory() {
+            const tbody = document.getElementById('historyTable').querySelector('tbody');
+            tbody.innerHTML = resolvedAlerts.map(alert => `
+                <tr>
+                    <td>${alert.type}</td>
+                    <td>${alert.applicant}</td>
+                    <td>${alert.dateDetected}</td>
+                    <td>${alert.dateResolved}</td>
+                    <td>${alert.resolutionTime}</td>
+                    <td class="status-${alert.status.toLowerCase().replace(' ', '-')}">${alert.status}</td>
+                    <td>
+                        <button class="btn btn-sm btn-view">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize Charts
+        function initCharts() {
+            // Alert Trends Chart
+            const trendsCtx = document.getElementById('alertTrendsChart').getContext('2d');
+            new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'High Risk Alerts',
+                        data: [5, 4, 6, 3, 7, 2, 1],
+                        borderColor: '#F44336',
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: 'Medium Risk Alerts',
+                        data: [3, 5, 2, 4, 3, 1, 0],
+                        borderColor: '#FF9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: 'Low Risk Alerts',
+                        data: [2, 1, 3, 2, 1, 0, 0],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Fraud Types Chart
+            const fraudTypesCtx = document.getElementById('fraudTypesChart').getContext('2d');
+            new Chart(fraudTypesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Fake Documents', 'Identity Theft', 'Income Fraud', 'Duplicate Apps', 'Other'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            '#F44336',
+                            '#FF9800',
+                            '#FFC107',
+                            '#4CAF50',
+                            '#9E9E9E'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+            
+            // Resolution Rate Chart
+            const resolutionCtx = document.getElementById('resolutionRateChart').getContext('2d');
+            new Chart(resolutionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Resolution Rate',
+                        data: [85, 88, 90, 92, 94, 96],
+                        backgroundColor: '#4B0082',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Tab functionality
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAlerts();
+            renderHistory();
+            initCharts();
+            setupTabs();
+        });
+    </script>
+</body>
+</html>
