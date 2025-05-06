@@ -587,8 +587,20 @@
         });
 
         submitApplicationBtn.addEventListener('click', () => {
-            // In a real app, you would send the data to the server here
-            console.log('Submitting application:', applicationState);
+            // Generate a unique application ID
+            const appId = 'APP-' + Date.now().toString().slice(-6);
+            
+            // Create the application object
+            const application = {
+                id: appId,
+                ...applicationState.personalDetails,
+                documents: applicationState.documents,
+                status: 'Pending',
+                date: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            saveApplication(application);
             
             // Move to confirmation section
             documentUploadSection.classList.remove('active');
@@ -608,11 +620,12 @@
             
             files.forEach(file => {
                 // In a real app, you would upload to server here
-                // For demo, we'll just add to the UI and application state
+                // For demo, we'll simulate file upload
                 const documentType = prompt(`What type of document is this?\n\nOptions: ${requiredDocuments.join(', ')}`);
                 
                 if (documentType && requiredDocuments.includes(documentType)) {
                     const documentId = Date.now();
+                    const fileUrl = URL.createObjectURL(file);
                     
                     // Add to application state
                     applicationState.documents.push({
@@ -620,6 +633,7 @@
                         name: file.name,
                         type: documentType,
                         size: file.size,
+                        url: fileUrl,
                         uploadedAt: new Date().toISOString()
                     });
                     
@@ -692,6 +706,20 @@
             } else {
                 submitApplicationBtn.classList.add('btn-disabled');
             }
+        }
+
+        function saveApplication(application) {
+            // Get existing applications from localStorage
+            let applications = JSON.parse(localStorage.getItem('loanApplications')) || [];
+            
+            // Add new application
+            applications.push(application);
+            
+            // Save back to localStorage
+            localStorage.setItem('loanApplications', JSON.stringify(applications));
+            
+            // Trigger storage event to update other tabs
+            window.dispatchEvent(new Event('storage'));
         }
 
         // Initialize
