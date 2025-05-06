@@ -703,6 +703,63 @@
         display: block;
     }
 
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: black;
+    }
+
+    .document-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .document-item-preview {
+        width: calc(33.333% - 10px);
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .document-item-preview img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: contain;
+    }
+
     /* ===== Responsive Adjustments ===== */
     @media (max-width: 1200px) {
         .bank-stats {
@@ -768,6 +825,10 @@
             width: 100%;
             justify-content: flex-end;
         }
+
+        .document-item-preview {
+            width: calc(50% - 10px);
+        }
     }
 
     @media (max-width: 576px) {
@@ -815,6 +876,10 @@
         th, td {
             padding: 8px 12px;
         }
+
+        .document-item-preview {
+            width: 100%;
+        }
     }
 
     /* ===== Print Styles ===== */
@@ -853,16 +918,17 @@
                 </div>
                 
                 <ul>
-                    <li><a href="#dashboard"><i class="icon-dashboard"></i> Dashboard</a></li>
-                    <li><a href="#screening"><i class="icon-loan"></i> Loan Screening</a></li>
-                    <li><a href="#risk"><i class="icon-risk"></i> Risk Assessment</a></li>
-                    <li><a href="#monitoring"><i class="icon-monitor"></i> Disbursement Monitoring</a></li>
-                    <li><a href="#alerts"><i class="icon-alert"></i> Alerts & Reports</a></li>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li class="active"><a href="#screening"><i class="fas fa-search"></i> Loan Screening</a></li>
+                    <li><a href="loan-application.html"><i class="fas fa-file-signature"></i> Loan Application</a></li>
+                    <li><a href="#risk"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
+                    <li><a href="#monitoring"><i class="fas fa-eye"></i> Disbursement Monitoring</a></li>
+                    <li><a href="#alerts"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
                     
                     <!-- Admin Only -->
-                    <li class="admin-only"><a href="#users"><i class="icon-users"></i> User Management</a></li>
-                    <li class="admin-only"><a href="#settings"><i class="icon-settings"></i> System Settings</a></li>
-                    <li class="admin-only"><a href="#audit"><i class="icon-audit"></i> Audit Logs</a></li>
+                    <li class="admin-only"><a href="#users"><i class="fas fa-users"></i> User Management</a></li>
+                    <li class="admin-only"><a href="#settings"><i class="fas fa-cog"></i> System Settings</a></li>
+                    <li class="admin-only"><a href="#audit"><i class="fas fa-clipboard-list"></i> Audit Logs</a></li>
                 </ul>
             </nav>
         </aside>
@@ -872,10 +938,10 @@
             <header class="top-bar">
                 <div class="search-bar">
                     <input type="text" placeholder="Search...">
-                    <button><i class="icon-search"></i></button>
+                    <button><i class="fas fa-search"></i></button>
                 </div>
                 <div class="user-actions">
-                    <button class="btn-notification"><i class="icon-bell"></i></button>
+                    <button class="btn-notification"><i class="fas fa-bell"></i></button>
                     <button class="btn-logout">Logout</button>
                 </div>
             </header>
@@ -889,8 +955,8 @@
                             <i class="fas fa-file-alt"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>Applications Today</h3>
-                            <p>42</p>
+                            <h3>Total Applications</h3>
+                            <p id="totalApplications">0</p>
                         </div>
                     </div>
                     
@@ -900,7 +966,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Verified</h3>
-                            <p>28</p>
+                            <p id="verifiedApplications">0</p>
                         </div>
                     </div>
                     
@@ -910,7 +976,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Flagged</h3>
-                            <p>9</p>
+                            <p id="flaggedApplications">0</p>
                         </div>
                     </div>
                     
@@ -920,7 +986,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Rejected</h3>
-                            <p>5</p>
+                            <p id="rejectedApplications">0</p>
                         </div>
                     </div>
                 </div>
@@ -933,27 +999,297 @@
                 </div>
                 
                 <div class="activity-card">
-                    <h3>Pending Applications</h3>
-                    <table id="applicationsTable">
-                        <thead>
-                            <tr>
-                                <th>App ID</th>
-                                <th>Applicant</th>
-                                <th>Amount</th>
-                                <th>Documents</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
+                    <h3>Recent Applications</h3>
+                    <div class="table-container">
+                        <table id="applicationsTable">
+                            <thead>
+                                <tr>
+                                    <th>App ID</th>
+                                    <th>Applicant</th>
+                                    <th>Amount</th>
+                                    <th>Documents</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
+
+    <!-- Application Details Modal -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Application Details</h2>
+            <div id="modalContent">
+                <!-- Application details will be loaded here -->
+            </div>
+        </div>
+    </div>
     
-    <script src="/screening.js"></script>
+    <script>
+        // Application data storage
+        let applications = JSON.parse(localStorage.getItem('loanApplications')) || [];
+        
+        // DOM Elements
+        const applicationsTable = document.getElementById('applicationsTable').getElementsByTagName('tbody')[0];
+        const totalApplicationsEl = document.getElementById('totalApplications');
+        const verifiedApplicationsEl = document.getElementById('verifiedApplications');
+        const flaggedApplicationsEl = document.getElementById('flaggedApplications');
+        const rejectedApplicationsEl = document.getElementById('rejectedApplications');
+        const modal = document.getElementById('applicationModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const closeBtn = document.querySelector('.close');
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            updateStats();
+            renderApplicationsTable();
+            initializeChart();
+            
+            // Listen for storage events to update when new applications are submitted
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'loanApplications') {
+                    applications = JSON.parse(e.newValue) || [];
+                    updateStats();
+                    renderApplicationsTable();
+                }
+            });
+        }
+        
+        // Update the statistics cards
+        function updateStats() {
+            const total = applications.length;
+            const verified = applications.filter(app => app.status === 'Verified').length;
+            const flagged = applications.filter(app => app.status === 'Flagged').length;
+            const rejected = applications.filter(app => app.status === 'Rejected').length;
+            
+            totalApplicationsEl.textContent = total;
+            verifiedApplicationsEl.textContent = verified;
+            flaggedApplicationsEl.textContent = flagged;
+            rejectedApplicationsEl.textContent = rejected;
+        }
+        
+        // Render the applications table
+        function renderApplicationsTable() {
+            applicationsTable.innerHTML = '';
+            
+            // Sort applications by date (newest first)
+            const sortedApplications = [...applications].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedApplications.forEach(application => {
+                const row = applicationsTable.insertRow();
+                
+                // Format date
+                const appDate = new Date(application.date);
+                const formattedDate = appDate.toLocaleDateString() + ' ' + appDate.toLocaleTimeString();
+                
+                row.innerHTML = `
+                    <td>${application.id}</td>
+                    <td>${application.firstName} ${application.lastName}</td>
+                    <td>$${application.loanAmount}</td>
+                    <td>${application.documents.length}</td>
+                    <td><span class="status-${application.status.toLowerCase()}">${application.status}</span></td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <button class="btn btn-view btn-sm" onclick="viewApplication('${application.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-review btn-sm" onclick="reviewApplication('${application.id}')">
+                            <i class="fas fa-search"></i> Review
+                        </button>
+                    </td>
+                `;
+            });
+        }
+        
+        // View application details
+        function viewApplication(appId) {
+            const application = applications.find(app => app.id === appId);
+            if (!application) return;
+            
+            modalTitle.textContent = `Application #${application.id} - ${application.firstName} ${application.lastName}`;
+            
+            // Format date
+            const appDate = new Date(application.date);
+            const formattedDate = appDate.toLocaleDateString() + ' ' + appDate.toLocaleTimeString();
+            
+            // Create HTML for application details
+            let html = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Application Date</label>
+                        <p>${formattedDate}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <p><span class="status-${application.status.toLowerCase()}">${application.status}</span></p>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <p>${application.email}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <p>${application.phone}</p>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <p>${application.dob}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>National ID</label>
+                        <p>${application.idNumber}</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Address</label>
+                    <p>${application.address}</p>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Employment Status</label>
+                        <p>${application.employment}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Income</label>
+                        <p>$${application.income}</p>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loan Amount</label>
+                        <p>$${application.loanAmount}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Purpose</label>
+                        <p>${application.loanPurpose}</p>
+                    </div>
+                </div>
+                
+                <h3>Uploaded Documents</h3>
+                <div class="document-preview">
+            `;
+            
+            // Add document previews
+            application.documents.forEach(doc => {
+                html += `
+                    <div class="document-item-preview">
+                        <h4>${doc.type}</h4>
+                        <p>${doc.name}</p>
+                        ${doc.type.includes('image') ? 
+                            `<img src="${doc.url}" alt="${doc.name}">` : 
+                            `<p><a href="${doc.url}" target="_blank">View Document</a></p>`
+                        }
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            
+            modalContent.innerHTML = html;
+            modal.style.display = 'block';
+        }
+        
+        // Review application (change status)
+        function reviewApplication(appId) {
+            const application = applications.find(app => app.id === appId);
+            if (!application) return;
+            
+            const newStatus = prompt(`Change application status for ${application.firstName} ${application.lastName} (Current: ${application.status})`, application.status);
+            
+            if (newStatus && ['Pending', 'Verified', 'Flagged', 'Rejected'].includes(newStatus)) {
+                application.status = newStatus;
+                localStorage.setItem('loanApplications', JSON.stringify(applications));
+                updateStats();
+                renderApplicationsTable();
+            } else if (newStatus) {
+                alert('Invalid status. Please use one of: Pending, Verified, Flagged, Rejected');
+            }
+        }
+        
+        // Initialize the chart
+        function initializeChart() {
+            const ctx = document.getElementById('docVerificationChart').getContext('2d');
+            
+            // Count documents by type
+            const docTypes = ['National ID Front', 'National ID Back', 'Proof of Income', 'Proof of Residence', 'Passport Photo'];
+            const docCounts = docTypes.map(type => {
+                return applications.reduce((count, app) => {
+                    return count + app.documents.filter(doc => doc.type === type).length;
+                }, 0);
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: docTypes,
+                    datasets: [{
+                        label: 'Documents Uploaded',
+                        data: docCounts,
+                        backgroundColor: [
+                            'rgba(75, 0, 130, 0.7)',
+                            'rgba(75, 0, 130, 0.6)',
+                            'rgba(75, 0, 130, 0.5)',
+                            'rgba(75, 0, 130, 0.4)',
+                            'rgba(75, 0, 130, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 0, 130, 1)',
+                            'rgba(75, 0, 130, 1)',
+                            'rgba(75, 0, 130, 1)',
+                            'rgba(75, 0, 130, 1)',
+                            'rgba(75, 0, 130, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Close modal when clicking the X
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Initialize the dashboard when the page loads
+        window.onload = initDashboard;
+    </script>
 </body>
 </html>
