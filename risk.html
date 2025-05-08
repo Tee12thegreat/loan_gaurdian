@@ -835,71 +835,139 @@
             }
         }
     </style>
-    <body>
-        <div class="dashboard-container">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="logo">
-                    <h1>Loan Guardian</h1>
-                    <p>Fraud Detection System</p>
+   <body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Loan Guardian</h1>
+                <p>Fraud Detection System</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="user-profile">
+                    <div class="avatar">AD</div>
+                    <div class="user-info">
+                        <span class="username">Admin User</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="screening.html"><i class="fas fa-search-dollar"></i> Loan Screening</a></li>
+                    <li><a href="risk.html"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
+                    <li><a href="monitoring.html"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
+                    <li><a href="alerts.html"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
+                    
+                    <!-- Admin Only -->
+                    <li class="admin-only"><a href="users.html"><i class="fas fa-users-cog"></i> User Management</a></li>
+                    <li class="admin-only"><a href="settings.html"><i class="fas fa-cog"></i> System Settings</a></li>
+                    <li class="admin-only"><a href="audit.html"><i class="fas fa-clipboard-list"></i> Audit Logs</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search applications..." id="searchInput">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-notification"><i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <h2>Credit Risk Assessment</h2>
+                
+                <!-- Risk Summary Cards -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #E1F5FE;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Assessed</h3>
+                            <p id="totalAssessed">0</p>
+                            <small>Applications analyzed</small>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #E8F5E9;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Low Risk</h3>
+                            <p id="lowRiskCount">0</p>
+                            <small id="lowRiskPercent">0% of total</small>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #FFF3E0;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Medium Risk</h3>
+                            <p id="mediumRiskCount">0</p>
+                            <small id="mediumRiskPercent">0% of total</small>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #FFEBEE;">
+                            <i class="fas fa-skull-crossbones"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>High Risk</h3>
+                            <p id="highRiskCount">0</p>
+                            <small id="highRiskPercent">0% of total</small>
+                        </div>
+                    </div>
                 </div>
                 
-                <nav class="nav-menu">
-                    <div class="user-profile">
-                        <div class="avatar">JD</div>
-                        <div class="user-info">
-                            <span class="username">USER</span>
-                            <span class="user-role">Admin</span>
+                <!-- Risk Charts Section -->
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <h3>Risk Distribution</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn" data-period="week">Week</button>
+                            <button class="chart-btn active" data-period="month">Month</button>
+                            <button class="chart-btn" data-period="year">Year</button>
                         </div>
                     </div>
-                    
-                    <ul>
-                        <li><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
-                        <li><a href="screening.html"><i class="icon-loan"></i> Loan Screening</a></li>
-                        <li><a href="risk.html"><i class="icon-risk"></i> Risk Assessment</a></li>
-                        <li><a href="monitoring.html"><i class="icon-monitor"></i> Disbursement Monitoring</a></li>
-                        <li><a href="alerts.html"><i class="icon-alert"></i> Alerts & Reports</a></li>
-                        
-                        <!-- Admin Only -->
-                        <li class="admin-only"><a href="users.html"><i class="icon-users"></i> User Management</a></li>
-                        <li class="admin-only"><a href="settings.html"><i class="icon-settings"></i> System Settings</a></li>
-                        <li class="admin-only"><a href="audit.html"><i class="icon-audit"></i> Audit Logs</a></li>
-                    </ul>
-                </nav>
-            </aside>
-            
-             <!-- Main Content -->
-             <main class="main-content">
-                <header class="top-bar">
-                    <div class="search-bar">
-                        <input type="text" placeholder="Search...">
-                        <button><i class="icon-search"></i></button>
-                    </div>
-                    <div class="user-actions">
-                        <button class="btn-notification"><i class="icon-bell"></i></button>
-                        <button class="btn-logout">Logout</button>
-                    </div>
-                </header>
+                    <canvas id="riskDistributionChart"></canvas>
+                </div>
                 
-                <div class="content-area">
-                    <h2>Credit Risk Assessment</h2>
-                    
-                    <div class="chart-container">
-                        <div class="chart-title">
-                            <h3>Risk Distribution</h3>
-                        </div>
-                        <canvas id="riskDistributionChart"></canvas>
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <h3>Default Probability by Income Level</h3>
                     </div>
-                    
-                    <div class="chart-container">
-                        <div class="chart-title">
-                            <h3>Default Probability by Segment</h3>
-                        </div>
-                        <canvas id="defaultProbabilityChart"></canvas>
+                    <canvas id="defaultProbabilityChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <h3>Risk Factors Analysis</h3>
                     </div>
-                    
-                    <div class="activity-card">
+                    <canvas id="riskFactorsChart"></canvas>
+                </div>
+                
+                <!-- High Risk Applications Table -->
+                <div class="activity-card">
+                    <div class="chart-title">
                         <h3>High Risk Applications</h3>
+                        <button class="btn btn-primary btn-sm" id="refreshTable">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="table-container">
                         <table id="highRiskTable">
                             <thead>
                                 <tr>
@@ -907,6 +975,7 @@
                                     <th>Applicant</th>
                                     <th>Risk Score</th>
                                     <th>Amount</th>
+                                    <th>Status</th>
                                     <th>Recommendation</th>
                                     <th>Actions</th>
                                 </tr>
@@ -917,8 +986,9 @@
                         </table>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
+    </div>
         
         <script src="/risk.js"></script>
 </body>

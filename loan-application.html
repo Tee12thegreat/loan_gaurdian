@@ -308,6 +308,11 @@
             color: var(--success-green);
         }
 
+        .status-invalid {
+            background-color: #FFEBEE;
+            color: var(--danger-red);
+        }
+
         .remove-doc {
             color: var(--danger-red);
             cursor: pointer;
@@ -363,6 +368,38 @@
             position: absolute;
             left: 0;
             top: -3px;
+        }
+
+        .document-counter {
+            text-align: center;
+            margin: 15px 0;
+            font-weight: 500;
+            color: var(--dark-purple);
+        }
+
+        .document-counter span {
+            font-weight: bold;
+        }
+
+        .alert-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger {
+            background-color: #FFEBEE;
+            color: var(--danger-red);
+            border-left: 4px solid var(--danger-red);
+        }
+
+        .alert-success {
+            background-color: #E8F5E9;
+            color: var(--success-green);
+            border-left: 4px solid var(--success-green);
         }
 
         @media (max-width: 768px) {
@@ -488,15 +525,20 @@
                 <h2 class="form-title">Document Upload</h2>
                 
                 <div class="required-documents">
-                    <h3>Required Documents</h3>
+                    <h3>Required Documents (4 total)</h3>
                     <ul class="document-requirements">
-                        <li>National ID (Front and Back)</li>
-                        <li>Proof of Income (Pay slips or Bank Statements)</li>
-                        <li>Proof of Residence (Utility Bill or Lease Agreement)</li>
-                        <li>Recent Passport Photo</li>
+                        <li>National ID (Front and Back) - 2 documents</li>
+                        <li>Proof of Income (Pay slips or Bank Statements) - 1 document</li>
+                        <li>Proof of Residence (Utility Bill or Lease Agreement) - 1 document</li>
                     </ul>
                     <p>All documents must be clear and legible. Maximum file size: 5MB per document.</p>
                 </div>
+                
+                <div class="document-counter" id="documentCounter">
+                    Uploaded: <span>0</span>/4 documents
+                </div>
+                
+                <div id="documentAlert" class="alert-message" style="display: none;"></div>
                 
                 <div class="document-upload">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -548,14 +590,15 @@
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
         const step3 = document.getElementById('step3');
+        const documentCounter = document.getElementById('documentCounter');
+        const documentAlert = document.getElementById('documentAlert');
 
         // Required document types
         const requiredDocuments = [
-            'National ID Front',
-            'National ID Back',
-            'Proof of Income',
-            'Proof of Residence',
-            'Passport Photo'
+            { name: 'National ID Front', count: 1 },
+            { name: 'National ID Back', count: 1 },
+            { name: 'Proof of Income', count: 1 },
+            { name: 'Proof of Residence', count: 1 }
         ];
 
         // Event Listeners
@@ -587,6 +630,14 @@
         });
 
         submitApplicationBtn.addEventListener('click', () => {
+            // First check if all documents are valid
+            const invalidDocuments = applicationState.documents.filter(doc => !doc.isValid);
+            
+            if (invalidDocuments.length > 0) {
+                showAlert('Please fix all invalid documents before submitting.', 'danger');
+                return;
+            }
+            
             // Generate a unique application ID
             const appId = 'APP-' + Date.now().toString().slice(-6);
             
@@ -618,14 +669,40 @@
         fileUploadInput.addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
             
+            // Check if uploading more than allowed
+            const remainingSlots = 4 - applicationState.documents.length;
+            if (files.length > remainingSlots) {
+                showAlert(`You can only upload ${remainingSlots} more document(s).`, 'danger');
+                fileUploadInput.value = '';
+                return;
+            }
+            
             files.forEach(file => {
+                // Check file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    showAlert(`File ${file.name} is too large (max 5MB).`, 'danger');
+                    return;
+                }
+                
                 // In a real app, you would upload to server here
                 // For demo, we'll simulate file upload
-                const documentType = prompt(`What type of document is this?\n\nOptions: ${requiredDocuments.join(', ')}`);
+                const documentType = prompt(`What type of document is this?\n\nOptions: ${requiredDocuments.map(d => d.name).join(', ')}`);
                 
-                if (documentType && requiredDocuments.includes(documentType)) {
+                if (documentType && requiredDocuments.some(d => d.name === documentType)) {
+                    // Check if we've already uploaded this document type
+                    const existingCount = applicationState.documents.filter(doc => doc.type === documentType).length;
+                    const maxAllowed = requiredDocuments.find(d => d.name === documentType).count;
+                    
+                    if (existingCount >= maxAllowed) {
+                        showAlert(`You can only upload ${maxAllowed} ${documentType} document(s).`, 'danger');
+                        return;
+                    }
+                    
                     const documentId = Date.now();
                     const fileUrl = URL.createObjectURL(file);
+                    
+                    // Verify document authenticity (simulated)
+                    const isAuthentic = verifyDocumentAuthenticity(file, documentType);
                     
                     // Add to application state
                     applicationState.documents.push({
@@ -634,16 +711,20 @@
                         type: documentType,
                         size: file.size,
                         url: fileUrl,
-                        uploadedAt: new Date().toISOString()
+                        uploadedAt: new Date().toISOString(),
+                        isValid: isAuthentic
                     });
                     
                     // Add to UI
-                    addDocumentToUI(documentId, file.name, documentType);
+                    addDocumentToUI(documentId, file.name, documentType, isAuthentic);
+                    
+                    // Update counter
+                    updateDocumentCounter();
                     
                     // Check if all required documents are uploaded
                     checkDocumentsCompletion();
                 } else {
-                    alert('Please select a valid document type from the required documents list.');
+                    showAlert('Please select a valid document type from the required documents list.', 'danger');
                 }
             });
             
@@ -652,7 +733,7 @@
         });
 
         // Helper Functions
-        function addDocumentToUI(id, name, type) {
+        function addDocumentToUI(id, name, type, isValid) {
             const documentItem = document.createElement('div');
             documentItem.className = 'document-item';
             documentItem.dataset.id = id;
@@ -666,7 +747,9 @@
                     </div>
                 </div>
                 <div>
-                    <span class="document-status status-uploaded">Uploaded</span>
+                    <span class="document-status ${isValid ? 'status-uploaded' : 'status-invalid'}">
+                        ${isValid ? 'Uploaded' : 'Invalid - Please replace'}
+                    </span>
                     <i class="fas fa-times remove-doc" data-id="${id}"></i>
                 </div>
             `;
@@ -690,22 +773,59 @@
                 docElement.remove();
             }
             
+            // Update counter
+            updateDocumentCounter();
+            
             // Check documents completion
             checkDocumentsCompletion();
         }
 
+        function updateDocumentCounter() {
+            const count = applicationState.documents.length;
+            documentCounter.innerHTML = `Uploaded: <span>${count}</span>/4 documents`;
+        }
+
         function checkDocumentsCompletion() {
-            // Check if all required documents are uploaded
-            const uploadedTypes = applicationState.documents.map(doc => doc.type);
-            const allUploaded = requiredDocuments.every(doc => uploadedTypes.includes(doc));
+            // Check if exactly 4 documents are uploaded
+            const allUploaded = applicationState.documents.length === 4;
+            
+            // Check if all documents are valid
+            const allValid = applicationState.documents.every(doc => doc.isValid);
             
             // Enable/disable submit button
-            submitApplicationBtn.disabled = !allUploaded;
-            if (allUploaded) {
+            submitApplicationBtn.disabled = !allUploaded || !allValid;
+            
+            if (allUploaded && allValid) {
                 submitApplicationBtn.classList.remove('btn-disabled');
+                showAlert('All documents uploaded and verified. You can now submit your application.', 'success');
+            } else if (allUploaded && !allValid) {
+                submitApplicationBtn.classList.add('btn-disabled');
+                showAlert('Some documents are invalid. Please replace them before submitting.', 'danger');
             } else {
                 submitApplicationBtn.classList.add('btn-disabled');
+                documentAlert.style.display = 'none';
             }
+        }
+
+        function verifyDocumentAuthenticity(file, type) {
+            // Simulate document verification
+            // In a real application, this would involve:
+            // 1. Checking image quality and readability
+            // 2. Verifying document format and structure
+            // 3. Cross-checking information with other documents
+            // 4. Potentially using AI/ML for forgery detection
+            
+            // For demo purposes, we'll randomly mark 20% of documents as invalid
+            return Math.random() > 0.2;
+        }
+
+        function showAlert(message, type) {
+            documentAlert.innerHTML = `
+                <i class="fas ${type === 'danger' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                ${message}
+            `;
+            documentAlert.className = `alert-message alert-${type}`;
+            documentAlert.style.display = 'flex';
         }
 
         function saveApplication(application) {
@@ -723,7 +843,7 @@
         }
 
         // Initialize
-        checkDocumentsCompletion();
+        updateDocumentCounter();
     </script>
 </body>
 </html>

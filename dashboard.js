@@ -259,3 +259,112 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+function calculatePercentageChange(oldValue, newValue) {
+    if (oldValue === 0) return 'N/A';
+    const change = ((newValue - oldValue) / oldValue) * 100;
+    return change.toFixed(1) + '%';
+}
+
+// Function to update dashboard stats
+function updateDashboardStats() {
+    // Get applications from localStorage
+    const applications = JSON.parse(localStorage.getItem('loanApplications')) || [];
+    const totalApplications = applications.length;
+    
+    // Calculate verified applications (status === 'Verified')
+    const verifiedApplications = applications.filter(app => 
+        app.status === 'Verified' || app.status === 'verified'
+    ).length;
+    
+    // Calculate fraud alerts (status === 'Flagged' or contains fraud indicators)
+    const fraudAlerts = applications.filter(app => 
+        app.status === 'Flagged' || 
+        app.status === 'Rejected' || 
+        (app.documents && app.documents.some(doc => !doc.isValid))
+    ).length;
+    
+    // Calculate fraud prevention effectiveness (simplified for demo)
+    const fraudPrevention = totalApplications > 0 ? 
+        Math.min(100, Math.round(100 - (fraudAlerts / totalApplications * 100))) : 0;
+    
+    // Calculate verification rate
+    const verificationRate = totalApplications > 0 ? 
+        Math.round((verifiedApplications / totalApplications) * 100) : 0;
+    
+    // Calculate alert rate
+    const alertRate = totalApplications > 0 ? 
+        Math.round((fraudAlerts / totalApplications) * 100) : 0;
+    
+    // Get previous month's data for comparison
+    const now = new Date();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthApps = applications.filter(app => {
+        const appDate = new Date(app.date);
+        return appDate.getFullYear() === lastMonth.getFullYear() && 
+               appDate.getMonth() === lastMonth.getMonth();
+    }).length;
+    
+    // Update the DOM elements
+    document.getElementById('totalApplications').textContent = totalApplications;
+    document.getElementById('verifiedApplications').textContent = verifiedApplications;
+    document.getElementById('fraudAlerts').textContent = fraudAlerts;
+    document.getElementById('fraudPrevention').textContent = fraudPrevention + '%';
+    document.getElementById('verificationRate').textContent = verificationRate + '% verification rate';
+    document.getElementById('alertRate').textContent = alertRate + '% alert rate';
+    
+    // Update trend indicator
+    const trendElement = document.getElementById('applicationTrend');
+    if (lastMonthApps > 0) {
+        const change = calculatePercentageChange(lastMonthApps, totalApplications);
+        if (change !== 'N/A') {
+            const isPositive = parseFloat(change) > 0;
+            trendElement.textContent = `${isPositive ? '+' : ''}${change} from last month`;
+            trendElement.style.color = isPositive ? '#4CAF50' : '#F44336';
+        } else {
+            trendElement.textContent = 'No previous data';
+            trendElement.style.color = '#666';
+        }
+    } else {
+        trendElement.textContent = 'No previous data';
+        trendElement.style.color = '#666';
+    }
+}
+
+// Initialize dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    updateDashboardStats();
+    
+    // Set up event listener for storage changes
+    window.addEventListener('storage', function() {
+        updateDashboardStats();
+    });
+    
+    // [Rest of your existing dashboard initialization code]
+    
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            this.classList.add('active');
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+    
+    // Chart period switching
+    const chartBtns = document.querySelectorAll('.chart-btn');
+    chartBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            chartBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            // Here you would update the chart data based on the period
+            // For demo purposes, we'll just log the selected period
+            console.log('Selected period:', this.getAttribute('data-period'));
+        });
+    });
+});
