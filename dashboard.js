@@ -15,7 +15,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentUser.role === 'admin') {
         document.body.classList.add('admin');
     }
-    
+
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Redirect loan officers directly to loan screening
+            if (currentUser.role === 'loan-officer') {
+                window.location.href = 'screening.html';
+            }
+
+            document.body.classList.add(currentUser.role);
+            document.querySelector('.username').textContent = currentUser.name;
+            document.querySelector('.user-role').textContent = currentUser.role.replace('-', ' ');
+            document.querySelector('.avatar').textContent = currentUser.name.charAt(0);
+        });
+   
     // Sample activity data
     const activities = [
         { userId: "U001", userRole: "Loan Officer", action: "User Booted", module: "Loan Screening", timestamp: "2025-04-14 10:45:23 AM", reason: "Approved flagged fraudulent docs" },
@@ -258,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `Loan Verification System Effectiveness (${period.charAt(0).toUpperCase() + period.slice(1)})`;
         });
     });
-});
 function calculatePercentageChange(oldValue, newValue) {
     if (oldValue === 0) return 'N/A';
     const change = ((newValue - oldValue) / oldValue) * 100;
