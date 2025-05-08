@@ -818,6 +818,18 @@
             padding: 8px 12px;
         }
     }
+    /* Role-based visibility classes */
+    .admin-only { display: none; }
+    .loan-officer-only { display: none; }
+    .risk-analyst-only { display: none; }
+    .fraud-analyst-only { display: none; }
+    .customer-only { display: none; }
+    
+    body.admin .admin-only { display: block; }
+    body.loan-officer .loan-officer-only { display: block; }
+    body.risk-analyst .risk-analyst-only { display: block; }
+    body.fraud-analyst .fraud-analyst-only { display: block; }
+    body.customer .customer-only { display: block; }
 
     /* ===== Print Styles ===== */
     @media print {
@@ -837,6 +849,18 @@
     }
 </style>
 <body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (currentUser) {
+                document.body.classList.add(currentUser.role);
+                document.querySelector('.username').textContent = currentUser.name;
+                document.querySelector('.user-role').textContent = currentUser.role.replace('-', ' ');
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -854,11 +878,12 @@
                     </div>
                 </div>
                 <ul>
-                    <li><a href="#dashboard"><i class="icon-dashboard"></i> Dashboard</a></li>
-                    <li><a href="#screening"><i class="icon-loan"></i> Loan Screening</a></li>
-                    <li><a href="#risk"><i class="icon-risk"></i> Risk Assessment</a></li>
-                    <li><a href="#monitoring"><i class="icon-monitor"></i> Disbursement Monitoring</a></li>
-                    <li><a href="#alerts"><i class="icon-alert"></i> Alerts & Reports</a></li>
+                    <li class="all-roles"><a href="#dashboard"><i class="icon-dashboard"></i> Dashboard</a></li>
+                    <li class="loan-officer-only admin-only"><a href="#screening"><i class="icon-loan"></i> Loan Screening</a></li>
+                    <li class="loan-officer-only admin-only"><a href="#application"><i class="icon-loan"></i> Loan Application</a></li>
+                    <li class="risk-analyst-only admin-only"><a href="#risk"><i class="icon-risk"></i> Risk Assessment</a></li>
+                    <li class="fraud-analyst-only admin-only"><a href="#monitoring"><i class="icon-monitor"></i> Disbursement Monitoring</a></li>
+                    <li class="fraud-analyst-only risk-analyst-only admin-only"><a href="#alerts"><i class="icon-alert"></i> Alerts & Reports</a></li>
                     
                     <!-- Admin Only -->
                     <li class="admin-only"><a href="#users"><i class="icon-users"></i> User Management</a></li>
