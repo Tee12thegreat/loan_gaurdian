@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Trail | Loan Guardian</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --lavender: #E6E6FA;
+            --dark-purple: #4B0082;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --text-dark: #333333;
+            --sidebar-width: 250px;
+            --success-green: #4CAF50;
+            --warning-orange: #FF9800;
+            --danger-red: #F44336;
+            --info-blue: #2196F3;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        /* Sidebar Styles (same as other pages) */
+        .logo {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--lavender);
+        }
+
+        .logo h1 {
+            color: var(--dark-purple);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: var(--text-dark);
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 10px;
+        }
+
+        .nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li a i {
+            margin-right: 10px;
+            color: var(--dark-purple);
+        }
+
+        .nav-menu li a:hover {
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+        }
+
+        .nav-menu li.active a {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .nav-menu li.active a i {
+            color: white;
+        }
+
+        /* Top Bar Styles */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            min-width: 250px;
+        }
+
+        .search-bar input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-bar button {
+            padding: 10px 15px;
+            background-color: var(--dark-purple);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-notification {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            padding: 8px 15px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #d6d6f0;
+        }
+
+        /* Audit Trail Specific Styles */
+        .audit-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .audit-table-container {
+            overflow-x: auto;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .audit-table th {
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        .audit-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .audit-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .audit-action {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .action-login { background-color: #E3F2FD; color: #1565C0; }
+        .action-create { background-color: #E8F5E9; color: #2E7D32; }
+        .action-update { background-color: #FFF8E1; color: #F57F17; }
+        .action-delete { background-color: #FFEBEE; color: #C62828; }
+        .action-approve { background-color: #E0F7FA; color: #00838F; }
+        .action-reject { background-color: #F3E5F5; color: #6A1B9A; }
+
+        .audit-details {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .user-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .user-badge .role {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            background-color: var(--lavender);
+            color: var(--dark-purple);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        /* Real-time indicator */
+        .real-time-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--success-green);
+            margin-bottom: 15px;
+        }
+
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background-color: var(--success-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .audit-filters {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Loan Guardian</h1>
+                <p>Fraud Detection System</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="user-profile">
+                    <div class="avatar">AD</div>
+                    <div class="user-info">
+                        <span class="username">Admin User</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="screening.html"><i class="fas fa-search-dollar"></i> Loan Screening</a></li>
+                    <li><a href="risk.html"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
+                    <li><a href="monitoring.html"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
+                    <li><a href="alerts.html"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
+                    
+                    <!-- Admin Only -->
+                    <li><a href="audit.html"><i class="fas fa-clipboard-list"></i> Audit Logs</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> System Settings</a></li>
+                    <li class="admin-only"><a href="users.html"><i class="fas fa-users-cog"></i> User Management</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search audit logs...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <h2>System Audit Trail</h2>
+                
+                <div class="real-time-indicator">
+                    <div class="pulse"></div>
+                    <span>Real-time updates active</span>
+                </div>
+                
+                <div class="audit-filters">
+                    <div class="filter-group">
+                        <label for="action-type">Action Type</label>
+                        <select id="action-type">
+                            <option value="">All Actions</option>
+                            <option value="login">Login/Logout</option>
+                            <option value="create">Create</option>
+                            <option value="update">Update</option>
+                            <option value="delete">Delete</option>
+                            <option value="approve">Approve</option>
+                            <option value="reject">Reject</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="user-filter">User</label>
+                        <select id="user-filter">
+                            <option value="">All Users</option>
+                            <option value="U001">Admin User (Admin)</option>
+                            <option value="U002">Loan Officer (Officer)</option>
+                            <option value="U003">Risk Analyst (Analyst)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="date-from">From Date</label>
+                        <input type="date" id="date-from">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="date-to">To Date</label>
+                        <input type="date" id="date-to">
+                    </div>
+                </div>
+                
+                <div class="audit-table-container">
+                    <table class="audit-table" id="auditLogsTable">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Audit logs will be populated here -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="pagination">
+                        <div class="pagination-info">Showing 1-10 of 47 entries</div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" disabled>Previous</button>
+                            <button class="pagination-btn active">1</button>
+                            <button class="pagination-btn">2</button>
+                            <button class="pagination-btn">3</button>
+                            <button class="pagination-btn">4</button>
+                            <button class="pagination-btn">5</button>
+                            <button class="pagination-btn">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sample audit log data
+        const auditLogs = [
+            {
+                id: 'AUDIT-2024-001',
+                timestamp: '2024-02-20 14:32:45',
+                userId: 'U001',
+                userName: 'Admin User',
+                userRole: 'Administrator',
+                action: 'login',
+                actionLabel: 'User Login',
+                details: 'Successful login from Chrome on Windows',
+                ipAddress: '192.168.1.45',
+                entityType: 'system',
+                entityId: '',
+                changes: null
+            },
+            {
+                id: 'AUDIT-2024-002',
+                timestamp: '2024-02-20 14:35:22',
+                userId: 'U001',
+                userName: 'Admin User',
+                userRole: 'Administrator',
+                action: 'update',
+                actionLabel: 'Application Review',
+                details: 'Changed status from "Pending" to "Flagged"',
+                ipAddress: '192.168.1.45',
+                entityType: 'application',
+                entityId: 'APP-2024-042',
+                changes: {
+                    field: 'status',
+                    oldValue: 'Pending',
+                    newValue: 'Flagged',
+                    reason: 'ID verification failed'
+                }
+            },
+            {
+                id: 'AUDIT-2024-003',
+                timestamp: '2024-02-20 14:40:18',
+                userId: 'U002',
+                userName: 'Loan Officer',
+                userRole: 'Officer',
+                action: 'create',
+                actionLabel: 'New Application',
+                details: 'Created new loan application for Tendai Chitate',
+                ipAddress: '192.168.1.67',
+                entityType: 'application',
+                entityId: 'APP-2024-043',
+                changes: null
+            },
+            {
+                id: 'AUDIT-2024-004',
+                timestamp: '2024-02-20 15:12:33',
+                userId: 'U003',
+                userName: 'Risk Analyst',
+                userRole: 'Analyst',
+                action: 'approve',
+                actionLabel: 'Risk Approval',
+                details: 'Approved risk assessment for application',
+                ipAddress: '192.168.1.89',
+                entityType: 'application',
+                entityId: 'APP-2024-038',
+                changes: {
+                    riskScore: '65 → 42',
+                    approvalLimit: '$5,000'
+                }
+            },
+            {
+                id: 'AUDIT-2024-005',
+                timestamp: '2024-02-20 15:45:10',
+                userId: 'U001',
+                userName: 'Admin User',
+                userRole: 'Administrator',
+                action: 'update',
+                actionLabel: 'System Settings',
+                details: 'Changed fraud detection sensitivity from "Medium" to "High"',
+                ipAddress: '192.168.1.45',
+                entityType: 'system',
+                entityId: 'SETTINGS-001',
+                changes: {
+                    setting: 'detection_sensitivity',
+                    oldValue: 'Medium',
+                    newValue: 'High'
+                }
+            },
+            {
+                id: 'AUDIT-2024-006',
+                timestamp: '2024-02-20 16:20:55',
+                userId: 'U002',
+                userName: 'Loan Officer',
+                userRole: 'Officer',
+                action: 'reject',
+                actionLabel: 'Application Rejection',
+                details: 'Rejected application due to fraudulent documents',
+                ipAddress: '192.168.1.67',
+                entityType: 'application',
+                entityId: 'APP-2024-029',
+                changes: {
+                    status: 'Flagged → Rejected',
+                    reason: 'Document forgery detected'
+                }
+            },
+            {
+                id: 'AUDIT-2024-007',
+                timestamp: '2024-02-20 16:45:30',
+                userId: 'U001',
+                userName: 'Admin User',
+                userRole: 'Administrator',
+                action: 'delete',
+                actionLabel: 'User Deletion',
+                details: 'Deleted user account for terminated employee',
+                ipAddress: '192.168.1.45',
+                entityType: 'user',
+                entityId: 'U014',
+                changes: {
+                    username: 'jdoe',
+                    role: 'Credit Analyst'
+                }
+            },
+            {
+                id: 'AUDIT-2024-008',
+                timestamp: '2024-02-20 17:10:15',
+                userId: 'U003',
+                userName: 'Risk Analyst',
+                userRole: 'Analyst',
+                action: 'update',
+                actionLabel: 'Risk Model Update',
+                details: 'Updated risk assessment parameters',
+                ipAddress: '192.168.1.89',
+                entityType: 'system',
+                entityId: 'RISK-MODEL',
+                changes: {
+                    incomeMultiplier: '0.35 → 0.30',
+                    debtRatioThreshold: '0.45 → 0.40'
+                }
+            },
+            {
+                id: 'AUDIT-2024-009',
+                timestamp: '2024-02-20 17:35:42',
+                userId: 'U001',
+                userName: 'Admin User',
+                userRole: 'Administrator',
+                action: 'create',
+                actionLabel: 'New Alert Rule',
+                details: 'Created new fraud detection rule for income verification',
+                ipAddress: '192.168.1.45',
+                entityType: 'system',
+                entityId: 'ALERT-RULE-015',
+                changes: null
+            },
+            {
+                id: 'AUDIT-2024-010',
+                timestamp: '2024-02-20 18:05:20',
+                userId: 'U002',
+                userName: 'Loan Officer',
+                userRole: 'Officer',
+                action: 'logout',
+                actionLabel: 'User Logout',
+                details: 'User logged out of system',
+                ipAddress: '192.168.1.67',
+                entityType: 'system',
+                entityId: '',
+                changes: null
+            }
+        ];
+
+        // Render audit logs table
+        function renderAuditLogs(logs = auditLogs) {
+            const tbody = document.getElementById('auditLogsTable').querySelector('tbody');
+            tbody.innerHTML = logs.map(log => `
+                <tr>
+                    <td>${log.timestamp}</td>
+                    <td>
+                        <div class="user-badge">
+                            ${log.userName}
+                            <span class="role">${log.userRole}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="audit-action action-${log.action}">${log.actionLabel}</span>
+                    </td>
+                    <td>
+                        ${log.details}
+                        ${log.changes ? `
+                            <div class="audit-details">
+                                ${Object.entries(log.changes).map(([key, value]) => `
+                                    <div><strong>${key}:</strong> ${value}</div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </td>
+                    <td>${log.ipAddress}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Simulate real-time updates
+        function simulateRealTimeUpdates() {
+            // In a real app, this would be a WebSocket connection
+            setInterval(() => {
+                const actions = ['login', 'update', 'create', 'approve', 'reject'];
+                const users = [
+                    { id: 'U001', name: 'Admin User', role: 'Administrator' },
+                    { id: 'U002', name: 'Loan Officer', role: 'Officer' },
+                    { id: 'U003', name: 'Risk Analyst', role: 'Analyst' }
+                ];
+                
+                const randomUser = users[Math.floor(Math.random() * users.length)];
+                const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                
+                const now = new Date();
+                const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                
+                const newLog = {
+                    id: `AUDIT-${now.getFullYear()}-${Math.floor(Math.random() * 1000)}`,
+                    timestamp: timestamp,
+                    userId: randomUser.id,
+                    userName: randomUser.name,
+                    userRole: randomUser.role,
+                    action: randomAction,
+                    actionLabel: randomAction.charAt(0).toUpperCase() + randomAction.slice(1) + ' Action',
+                    details: `Performed ${randomAction} operation on ${['application', 'user', 'system'][Math.floor(Math.random() * 3)]}`,
+                    ipAddress: `192.168.1.${Math.floor(Math.random() * 100)}`,
+                    entityType: ['application', 'user', 'system'][Math.floor(Math.random() * 3)],
+                    entityId: `${['APP', 'USER', 'SYS'][Math.floor(Math.random() * 3)]}-${now.getFullYear()}-${Math.floor(Math.random() * 1000)}`,
+                    changes: Math.random() > 0.5 ? {
+                        field: ['status', 'amount', 'risk_score'][Math.floor(Math.random() * 3)],
+                        oldValue: ['Pending', '$5000', 'Medium'][Math.floor(Math.random() * 3)],
+                        newValue: ['Approved', '$4500', 'High'][Math.floor(Math.random() * 3)]
+                    } : null
+                };
+                
+                // Add to beginning of array
+                auditLogs.unshift(newLog);
+                
+                // Re-render if no filters are active
+                if (!document.getElementById('action-type').value && 
+                    !document.getElementById('user-filter').value && 
+                    !document.getElementById('date-from').value && 
+                    !document.getElementById('date-to').value) {
+                    renderAuditLogs();
+                }
+                
+            }, 10000); // Every 10 seconds
+        }
+
+        // Initialize filters
+        function setupFilters() {
+            document.getElementById('action-type').addEventListener('change', filterLogs);
+            document.getElementById('user-filter').addEventListener('change', filterLogs);
+            document.getElementById('date-from').addEventListener('change', filterLogs);
+            document.getElementById('date-to').addEventListener('change', filterLogs);
+        }
+
+        // Filter logs based on selected criteria
+        function filterLogs() {
+            const actionType = document.getElementById('action-type').value;
+            const userId = document.getElementById('user-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            
+            const filteredLogs = auditLogs.filter(log => {
+                // Filter by action type
+                if (actionType && log.action !== actionType) return false;
+                
+                // Filter by user
+                if (userId && log.userId !== userId) return false;
+                
+                // Filter by date range
+                const logDate = log.timestamp.split(' ')[0];
+                if (dateFrom && logDate < dateFrom) return false;
+                if (dateTo && logDate > dateTo) return false;
+                
+                return true;
+            });
+            
+            renderAuditLogs(filteredLogs);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                window.location.href = 'index.html';
+            } else {
+                // Set user info in dashboard
+                document.querySelector('.username').textContent = currentUser.name;
+                document.querySelector('.user-role').textContent = currentUser.role.replace('-', ' ');
+                
+                // Add admin class to body if user is admin
+                if (currentUser.role === 'admin') {
+                    document.body.classList.add('admin');
+                }
+            }
+            
+            renderAuditLogs();
+            setupFilters();
+            simulateRealTimeUpdates();
+            
+            // Set up logout button
+            document.querySelector('.btn-logout').addEventListener('click', function() {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

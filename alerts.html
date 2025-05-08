@@ -568,7 +568,7 @@
                     <li><a href="screening.html"><i class="fas fa-search-dollar"></i> Loan Screening</a></li>
                     <li><a href="risk.html"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
                     <li><a href="monitoring.html"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
-                    <li><a href="alerts.html"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
+                    <li class="active"><a href="alerts.html"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
                     
                     <!-- Admin Only -->
                     <li class="admin-only"><a href="users.html"><i class="fas fa-users-cog"></i> User Management</a></li>
@@ -640,33 +640,33 @@
                             <div class="report-metrics">
                                 <div class="metric-card">
                                     <h4>Total Fraud Alerts</h4>
-                                    <div class="metric-value">23</div>
+                                    <div class="metric-value">17</div>
                                     <div class="metric-trend trend-up">
-                                        <i class="fas fa-arrow-up"></i> 12% from last week
+                                        <i class="fas fa-arrow-up"></i> 8% from last week
                                     </div>
                                 </div>
                                 
                                 <div class="metric-card">
                                     <h4>Fraud Prevention Rate</h4>
-                                    <div class="metric-value">94%</div>
+                                    <div class="metric-value">92%</div>
                                     <div class="metric-trend trend-up">
-                                        <i class="fas fa-arrow-up"></i> 3% improvement
+                                        <i class="fas fa-arrow-up"></i> 2% improvement
                                     </div>
                                 </div>
                                 
                                 <div class="metric-card">
                                     <h4>High-Risk Applications</h4>
-                                    <div class="metric-value severity-high">15</div>
+                                    <div class="metric-value severity-high">12</div>
                                     <div class="metric-trend trend-down">
-                                        <i class="fas fa-arrow-down"></i> 5% reduction
+                                        <i class="fas fa-arrow-down"></i> 3% reduction
                                     </div>
                                 </div>
                                 
                                 <div class="metric-card">
                                     <h4>Avg. Resolution Time</h4>
-                                    <div class="metric-value">2.4h</div>
+                                    <div class="metric-value">2.1h</div>
                                     <div class="metric-trend trend-down">
-                                        <i class="fas fa-arrow-down"></i> 30min faster
+                                        <i class="fas fa-arrow-down"></i> 25min faster
                                     </div>
                                 </div>
                             </div>
@@ -751,70 +751,150 @@
     </div>
 
     <script>
-        // Alert Data
+        // Alert Data - Updated to match loan screening process
         const fraudAlerts = [
             {
-                id: 'AL-2024-001',
-                type: 'Fake Documents',
-                applicant: 'John Moyo (APP-2024-015)',
+                id: 'AL-2024-042',
+                type: 'ID Verification Failed',
+                applicant: 'Tinashe Moyo (APP-2024-042)',
                 severity: 'High',
-                date: '2024-02-15 09:30',
-                details: 'Submitted documents show signs of tampering with identification numbers.',
-                status: 'Pending'
+                date: '2024-02-18 14:30',
+                details: 'National ID front and back mismatch detected. ID number on front (63-2105097-Q-71) doesn\'t match back (63-2105097-Q-17). Potential document tampering.',
+                status: 'Pending',
+                documents: ['National ID Front', 'National ID Back']
             },
             {
-                id: 'AL-2024-002',
-                type: 'Identity Theft',
-                applicant: 'Sarah Ndlovu (APP-2024-023)',
+                id: 'AL-2024-038',
+                type: 'Synthetic Identity',
+                applicant: 'Kudzai Chiwenga (APP-2024-038)',
+                severity: 'High',
+                date: '2024-02-17 11:45',
+                details: 'Same phone number (0775123456) and email pattern (kchiwengaXX@gmail.com) used across 3 applications with different names and IDs. Potential synthetic identity fraud.',
+                status: 'Pending',
+                documents: ['National ID Front', 'Proof of Income']
+            },
+            {
+                id: 'AL-2024-035',
+                type: 'Income Discrepancy',
+                applicant: 'Farai Dube (APP-2024-035)',
                 severity: 'Medium',
-                date: '2024-02-10 14:15',
-                details: 'Applicant photo doesn\'t match ID document facial recognition analysis.',
-                status: 'Pending'
+                date: '2024-02-16 09:15',
+                details: 'Reported monthly income ($5,200) exceeds industry average for "Primary School Teacher" by 320%. Pay slips show inconsistent deposit amounts.',
+                status: 'Pending',
+                documents: ['Proof of Income', 'Bank Statements']
             },
             {
-                id: 'AL-2024-003',
-                type: 'Income Misrepresentation',
-                applicant: 'David Sibanda (APP-2024-007)',
-                severity: 'Low',
-                date: '2024-02-05 11:45',
-                details: 'Reported income significantly higher than industry average for stated occupation.',
-                status: 'Pending'
-            },
-            {
-                id: 'AL-2024-004',
-                type: 'Duplicate Application',
-                applicant: 'Tendai Chitate (APP-2024-012)',
+                id: 'AL-2024-029',
+                type: 'Document Forgery',
+                applicant: 'Rudo Makoni (APP-2024-029)',
                 severity: 'High',
-                date: '2024-02-18 16:20',
-                details: 'Same applicant with slightly modified personal details detected across 3 applications.',
-                status: 'Pending'
+                date: '2024-02-15 16:20',
+                details: 'Proof of residence document shows signs of digital manipulation. Metadata analysis reveals document created in Photoshop. Original creation date missing.',
+                status: 'Pending',
+                documents: ['Proof of Residence']
+            },
+            {
+                id: 'AL-2024-027',
+                type: 'Insider Activity',
+                applicant: 'Tendai Banda (APP-2024-027)',
+                severity: 'High',
+                date: '2024-02-14 13:10',
+                details: 'Application bypassed standard verification checks. Employee U014 (Credit Analyst) accessed file 3 times before approval. No verification steps logged.',
+                status: 'Pending',
+                documents: []
+            },
+            {
+                id: 'AL-2024-024',
+                type: 'Digital Fraud Indicators',
+                applicant: 'Anesu Ndlovu (APP-2024-024)',
+                severity: 'Medium',
+                date: '2024-02-13 10:05',
+                details: 'Device fingerprint matches known fraud cluster (Cluster #FX-2023-15). VPN detected with IP address from high-risk location (Nigeria).',
+                status: 'Pending',
+                documents: []
+            },
+            {
+                id: 'AL-2024-021',
+                type: 'Employment Verification',
+                applicant: 'Chenai Gumbo (APP-2024-021)',
+                severity: 'Low',
+                date: '2024-02-12 15:30',
+                details: 'Employer verification failed - company registration number (CRB12456) invalid in company registry. Phone verification unanswered (3 attempts).',
+                status: 'Pending',
+                documents: ['Proof of Employment']
             }
         ];
-
+    
         const resolvedAlerts = [
             {
-                id: 'AL-2024-000',
+                id: 'AL-2024-005',
                 type: 'Bank Statement Fraud',
                 applicant: 'Alice Chikata (APP-2024-005)',
                 severity: 'High',
                 dateDetected: '2024-01-28 10:15',
                 dateResolved: '2024-01-29 14:30',
                 resolutionTime: '28h 15m',
-                status: 'Confirmed Fraud'
+                status: 'Confirmed Fraud',
+                resolutionNotes: 'Confirmed doctored bank statements. Transactions didn\'t match bank records. Application rejected and reported to authorities.'
             },
             {
-                id: 'AL-2024-001',
+                id: 'AL-2024-008',
                 type: 'Employment Verification',
                 applicant: 'Brian Moyo (APP-2024-008)',
                 severity: 'Medium',
                 dateDetected: '2024-01-25 13:45',
                 dateResolved: '2024-01-26 09:20',
                 resolutionTime: '19h 35m',
-                status: 'False Positive'
+                status: 'False Positive',
+                resolutionNotes: 'Company registry was outdated. Direct contact with HR confirmed employment. Application approved with verification note.'
+            },
+            {
+                id: 'AL-2024-010',
+                type: 'Identity Theft',
+                applicant: 'Clara Nkomo (APP-2024-010)',
+                severity: 'High',
+                dateDetected: '2024-01-22 08:30',
+                dateResolved: '2024-01-23 11:45',
+                resolutionTime: '27h 15m',
+                status: 'Confirmed Fraud',
+                resolutionNotes: 'Confirmed identity theft. Actual ID holder filed police report. Application rejected and flagged for future monitoring.'
+            },
+            {
+                id: 'AL-2024-013',
+                type: 'Loan Stacking',
+                applicant: 'David Sibanda (APP-2024-013)',
+                severity: 'High',
+                dateDetected: '2024-01-20 14:15',
+                dateResolved: '2024-01-21 16:50',
+                resolutionTime: '26h 35m',
+                status: 'Confirmed Fraud',
+                resolutionNotes: 'Found 4 active loans across different institutions. Debt-to-income ratio would be 480%. Application rejected and credit bureaus notified.'
+            },
+            {
+                id: 'AL-2024-016',
+                type: 'Digital Fraud',
+                applicant: 'Ethel Chuma (APP-2024-016)',
+                severity: 'Medium',
+                dateDetected: '2024-01-18 11:20',
+                dateResolved: '2024-01-19 09:10',
+                resolutionTime: '21h 50m',
+                status: 'Confirmed Fraud',
+                resolutionNotes: 'Device fingerprint matched known fraud ring. Application showed same behavior patterns as previous fraud cases. Rejected and IP blacklisted.'
+            },
+            {
+                id: 'AL-2024-019',
+                type: 'Income Misrepresentation',
+                applicant: 'Frank Mbetu (APP-2024-019)',
+                severity: 'Medium',
+                dateDetected: '2024-01-15 09:45',
+                dateResolved: '2024-01-16 08:30',
+                resolutionTime: '22h 45m',
+                status: 'False Positive',
+                resolutionNotes: 'Applicant provided additional documentation showing consulting income. Verified with tax records. Application approved with adjusted risk score.'
             }
         ];
-
-        // Render Alerts
+    
+        // Render Alerts with document links
         function renderAlerts() {
             const alertsList = document.getElementById('alertsList');
             alertsList.innerHTML = fraudAlerts.map(alert => `
@@ -824,6 +904,10 @@
                         <div class="alert-meta">
                             <span><i class="fas fa-user"></i> ${alert.applicant}</span>
                             <span><i class="fas fa-clock"></i> ${alert.date}</span>
+                            ${alert.documents.length > 0 ? 
+                                `<span><i class="fas fa-file"></i> ${alert.documents.join(', ')}</span>` : 
+                                ''
+                            }
                         </div>
                         <p class="alert-desc">${alert.details}</p>
                     </div>
@@ -831,18 +915,18 @@
                         ${alert.severity} Risk
                     </div>
                     <div class="alert-actions">
-                        <button class="btn btn-sm btn-view">
+                        <button class="btn btn-sm btn-view" onclick="viewApplicationDetails('${alert.id}')">
                             <i class="fas fa-eye"></i> View
                         </button>
-                        <button class="btn btn-sm btn-resolve">
+                        <button class="btn btn-sm btn-resolve" onclick="resolveAlert('${alert.id}')">
                             <i class="fas fa-check"></i> Resolve
                         </button>
                     </div>
                 </div>
             `).join('');
         }
-
-        // Render History Table
+    
+        // Render History Table with resolution notes
         function renderHistory() {
             const tbody = document.getElementById('historyTable').querySelector('tbody');
             tbody.innerHTML = resolvedAlerts.map(alert => `
@@ -854,44 +938,84 @@
                     <td>${alert.resolutionTime}</td>
                     <td class="status-${alert.status.toLowerCase().replace(' ', '-')}">${alert.status}</td>
                     <td>
-                        <button class="btn btn-sm btn-view">
+                        <button class="btn btn-sm btn-view" onclick="showResolutionNotes('${alert.id}')">
                             <i class="fas fa-eye"></i> Details
                         </button>
                     </td>
                 </tr>
             `).join('');
         }
-
-        // Initialize Charts
+    
+        // View application details from alert
+        function viewApplicationDetails(alertId) {
+            const alert = fraudAlerts.find(a => a.id === alertId);
+            if (!alert) return;
+            
+            // Extract application ID from the applicant field
+            const appId = alert.applicant.match(/APP-\d{4}-\d{3}/)?.[0];
+            if (appId) {
+                // In a real app, this would open the application in the screening section
+                alert(`Would navigate to application ${appId} in screening section`);
+            } else {
+                alert('Alert details: ' + alert.details);
+            }
+        }
+    
+        // Resolve an alert
+        function resolveAlert(alertId) {
+            const alert = fraudAlerts.find(a => a.id === alertId);
+            if (!alert) return;
+            
+            const resolution = prompt(`Resolve alert ${alertId}\n\nType: ${alert.type}\nApplicant: ${alert.applicant}\n\nEnter resolution notes:`, 'False positive - verified documents');
+            
+            if (resolution) {
+                // In a real app, this would move the alert to resolved and save the notes
+                alert(`Alert ${alertId} resolved with notes: ${resolution}`);
+            }
+        }
+    
+        // Show resolution notes
+        function showResolutionNotes(alertId) {
+            const alert = resolvedAlerts.find(a => a.id === alertId);
+            if (!alert) return;
+            
+            alert(`Resolution Notes for ${alert.id}:\n\n${alert.resolutionNotes}`);
+        }
+    
+        // Initialize Charts with screening data
         function initCharts() {
-            // Alert Trends Chart
+            // Alert Trends Chart - Showing alerts by type
             const trendsCtx = document.getElementById('alertTrendsChart').getContext('2d');
             new Chart(trendsCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'High Risk Alerts',
-                        data: [5, 4, 6, 3, 7, 2, 1],
-                        borderColor: '#F44336',
-                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }, {
-                        label: 'Medium Risk Alerts',
-                        data: [3, 5, 2, 4, 3, 1, 0],
-                        borderColor: '#FF9800',
-                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }, {
-                        label: 'Low Risk Alerts',
-                        data: [2, 1, 3, 2, 1, 0, 0],
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        {
+                            label: 'Document Fraud',
+                            data: [3, 5, 4, 6, 7, 5, 4],
+                            borderColor: '#4B0082',
+                            backgroundColor: 'rgba(75, 0, 130, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Identity Fraud',
+                            data: [2, 3, 5, 4, 3, 4, 2],
+                            borderColor: '#6A5ACD',
+                            backgroundColor: 'rgba(106, 90, 205, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Income Fraud',
+                            data: [1, 2, 3, 2, 4, 3, 2],
+                            borderColor: '#9370DB',
+                            backgroundColor: 'rgba(147, 112, 219, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
@@ -907,26 +1031,30 @@
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Alerts'
+                            }
                         }
                     }
                 }
             });
             
-            // Fraud Types Chart
+            // Fraud Types Chart - Matching screening document issues
             const fraudTypesCtx = document.getElementById('fraudTypesChart').getContext('2d');
             new Chart(fraudTypesCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Fake Documents', 'Identity Theft', 'Income Fraud', 'Duplicate Apps', 'Other'],
+                    labels: ['ID Documents', 'Proof of Income', 'Proof of Residence', 'Employment Docs', 'Other'],
                     datasets: [{
-                        data: [35, 25, 20, 15, 5],
+                        data: [42, 28, 15, 10, 5],
                         backgroundColor: [
-                            '#F44336',
-                            '#FF9800',
-                            '#FFC107',
-                            '#4CAF50',
-                            '#9E9E9E'
+                            '#4B0082',
+                            '#6A5ACD',
+                            '#9370DB',
+                            '#C9A0DC',
+                            '#E6E6FA'
                         ],
                         borderWidth: 1
                     }]
@@ -937,21 +1065,33 @@
                     plugins: {
                         legend: {
                             position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}% of fraud cases`;
+                                }
+                            }
                         }
                     }
                 }
             });
             
-            // Resolution Rate Chart
+            // Resolution Rate Chart - Showing screening resolution performance
             const resolutionCtx = document.getElementById('resolutionRateChart').getContext('2d');
             new Chart(resolutionCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: ['ID Fraud', 'Income Fraud', 'Doc Fraud', 'Synthetic ID', 'Other'],
                     datasets: [{
-                        label: 'Resolution Rate',
-                        data: [85, 88, 90, 92, 94, 96],
+                        label: 'Detection Rate',
+                        data: [92, 85, 88, 78, 65],
                         backgroundColor: '#4B0082',
+                        borderWidth: 1
+                    }, {
+                        label: 'False Positives',
+                        data: [8, 15, 12, 22, 35],
+                        backgroundColor: '#FF9800',
                         borderWidth: 1
                     }]
                 },
@@ -962,40 +1102,26 @@
                         y: {
                             beginAtZero: true,
                             max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
+                            title: {
+                                display: true,
+                                text: 'Percentage (%)'
                             }
                         }
                     }
                 }
             });
         }
-
-        // Tab functionality
-        function setupTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // Remove active class from all tabs and contents
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to clicked tab and corresponding content
-                    tab.classList.add('active');
-                    const tabId = tab.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-        }
-
+    
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             renderAlerts();
             renderHistory();
             initCharts();
             setupTabs();
+            setupLogout();
+            
+            // Set notification badge count
+            document.querySelector('.notification-badge').textContent = fraudAlerts.length;
         });
     </script>
 </body>

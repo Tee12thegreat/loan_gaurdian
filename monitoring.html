@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disbursement Monitoring | Loan Guardian</title>
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Chart.js for data visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
+         :root {
             --lavender: #E6E6FA;
             --dark-purple: #4B0082;
             --white: #FFFFFF;
@@ -550,7 +547,7 @@
                     <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                     <li><a href="screening.html"><i class="fas fa-search-dollar"></i> Loan Screening</a></li>
                     <li><a href="risk.html"><i class="fas fa-shield-alt"></i> Risk Assessment</a></li>
-                    <li><a href="monitoring.html"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
+                    <li class="active"><a href="monitoring.html"><i class="fas fa-money-check-alt"></i> Disbursement Monitoring</a></li>
                     <li><a href="alerts.html"><i class="fas fa-bell"></i> Alerts & Reports</a></li>
                     
                     <!-- Admin Only -->
@@ -565,13 +562,13 @@
         <main class="main-content">
             <header class="top-bar">
                 <div class="search-bar">
-                    <input type="text" placeholder="Search disbursements...">
+                    <input type="text" placeholder="Search disbursements..." id="searchInput">
                     <button><i class="fas fa-search"></i></button>
                 </div>
                 <div class="user-actions">
                     <button class="btn-notification">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge" id="notificationCount">0</span>
                     </button>
                     <button class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
@@ -588,8 +585,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>Total Disbursed</h3>
-                            <p>$225,000</p>
-                            <small>This Month</small>
+                            <p id="totalDisbursed">$0</p>
+                            <small id="disbursementPeriod">This Month</small>
                         </div>
                     </div>
                     
@@ -599,8 +596,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>Pending Disbursements</h3>
-                            <p>$75,000</p>
-                            <small>15 Applications</small>
+                            <p id="pendingDisbursements">0</p>
+                            <small id="pendingAmount">$0 pending</small>
                         </div>
                     </div>
                     
@@ -610,8 +607,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>Rejected Disbursements</h3>
-                            <p>$100,000</p>
-                            <small>8 Applications</small>
+                            <p id="rejectedDisbursements">0</p>
+                            <small id="rejectedAmount">$0 rejected</small>
                         </div>
                     </div>
                     
@@ -621,7 +618,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Disbursement Trend</h3>
-                            <p>+12%</p>
+                            <p id="disbursementTrend">0%</p>
                             <small>From last month</small>
                         </div>
                     </div>
@@ -654,6 +651,9 @@
                     <div class="table-container">
                         <div class="chart-title">
                             <h3>Recent Disbursements</h3>
+                            <button class="btn btn-primary btn-sm" id="refreshDisbursements">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
                         </div>
                         <table id="disbursementTable">
                             <thead>
@@ -678,6 +678,9 @@
                     <div class="table-container">
                         <div class="chart-title">
                             <h3>Pending Disbursement Approvals</h3>
+                            <button class="btn btn-primary btn-sm" id="refreshPending">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
                         </div>
                         <table id="pendingTable">
                             <thead>
@@ -702,9 +705,14 @@
                     <div class="table-container">
                         <div class="chart-title">
                             <h3>Rejected Disbursement Applications</h3>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-download"></i> Export Report
-                            </button>
+                            <div>
+                                <button class="btn btn-primary btn-sm" id="refreshRejected">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-download"></i> Export Report
+                                </button>
+                            </div>
                         </div>
                         <table id="rejectedTable">
                             <thead>
@@ -737,38 +745,8 @@
                         <div class="chart-title">
                             <h3>Common Fraud Indicators in Disbursements</h3>
                         </div>
-                        <div class="fraud-methods">
-                            <div class="fraud-type">
-                                <span class="fraud-type-name">Multiple Account Disbursements</span>
-                                <span class="fraud-type-value">42%</span>
-                            </div>
-                            <div class="fraud-type-bar">
-                                <div class="fraud-type-progress" style="width: 42%;"></div>
-                            </div>
-                            
-                            <div class="fraud-type">
-                                <span class="fraud-type-name">Unusual Timing Patterns</span>
-                                <span class="fraud-type-value">35%</span>
-                            </div>
-                            <div class="fraud-type-bar">
-                                <div class="fraud-type-progress" style="width: 35%;"></div>
-                            </div>
-                            
-                            <div class="fraud-type">
-                                <span class="fraud-type-name">Account Mismatch</span>
-                                <span class="fraud-type-value">28%</span>
-                            </div>
-                            <div class="fraud-type-bar">
-                                <div class="fraud-type-progress" style="width: 28%;"></div>
-                            </div>
-                            
-                            <div class="fraud-type">
-                                <span class="fraud-type-name">Duplicate Applications</span>
-                                <span class="fraud-type-value">22%</span>
-                            </div>
-                            <div class="fraud-type-bar">
-                                <div class="fraud-type-progress" style="width: 22%;"></div>
-                            </div>
+                        <div class="fraud-methods" id="fraudIndicators">
+                            <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -777,132 +755,400 @@
     </div>
 
     <script>
-        // Disbursement Data and Chart Logic
-        const disbursementData = [
-            { 
-                applicant: 'Tendaishe Chitate', 
-                amount: 50000, 
-                status: 'Pending', 
-                riskLevel: 'High',
-                date: '2023-06-15',
-                daysPending: 3,
-                rejectionReason: '',
-                lastReview: '2023-06-14'
-            },
-            { 
-                applicant: 'Alice Chikata', 
-                amount: 75000, 
-                status: 'Approved', 
-                riskLevel: 'Medium',
-                date: '2023-06-10',
-                daysPending: 0,
-                rejectionReason: '',
-                lastReview: '2023-06-09'
-            },
-            { 
-                applicant: 'John Moyo', 
-                amount: 35000, 
-                status: 'Rejected', 
-                riskLevel: 'High',
-                date: '2023-06-05',
-                daysPending: 0,
-                rejectionReason: 'Document Mismatch',
-                lastReview: '2023-06-04'
-            },
-            { 
-                applicant: 'Sarah Ndlovu', 
-                amount: 60000, 
-                status: 'Approved', 
-                riskLevel: 'Low',
-                date: '2023-06-12',
-                daysPending: 0,
-                rejectionReason: '',
-                lastReview: '2023-06-11'
-            },
-            { 
-                applicant: 'David Sibanda', 
-                amount: 45000, 
-                status: 'Pending', 
-                riskLevel: 'Medium',
-                date: '2023-06-14',
-                daysPending: 2,
-                rejectionReason: '',
-                lastReview: '2023-06-13'
+        // Global chart references
+        let disbursementTrendsChart;
+        let fraudPatternsChart;
+        
+        // Function to calculate days between dates
+        function daysBetween(date1, date2) {
+            const diffTime = Math.abs(new Date(date2) - new Date(date1));
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+        
+        // Function to get current period label
+        function getPeriodLabel(period) {
+            const now = new Date();
+            if (period === 'week') return 'This Week';
+            if (period === 'year') return 'This Year';
+            return 'This Month';
+        }
+        
+        // Function to process loan applications into disbursement data
+        function processDisbursementData(applications) {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            return applications.map(app => {
+                // Calculate risk score (simplified version from risk assessment)
+                let riskScore = 0;
+                const income = parseFloat(app.income) || 1;
+                const loanAmount = parseFloat(app.loanAmount) || 1;
+                const incomeToLoanRatio = income / loanAmount;
+                
+                if (incomeToLoanRatio < 0.5) riskScore += 40;
+                else if (incomeToLoanRatio < 1) riskScore += 25;
+                else if (incomeToLoanRatio < 2) riskScore += 10;
+                
+                if (app.employment === 'unemployed') riskScore += 30;
+                else if (app.employment === 'student') riskScore += 20;
+                else if (app.employment === 'self-employed') riskScore += 15;
+                
+                const invalidDocs = (app.documents || []).filter(doc => !doc.isValid).length;
+                riskScore += invalidDocs * 15;
+                
+                // Cap at 100
+                riskScore = Math.min(100, Math.max(0, Math.round(riskScore)));
+                
+                // Determine risk category
+                let riskCategory;
+                if (riskScore >= 70) riskCategory = 'High';
+                else if (riskScore >= 40) riskCategory = 'Medium';
+                else riskCategory = 'Low';
+                
+                // Determine status (random for demo, in real app this would come from backend)
+                let status;
+                if (app.status === 'Rejected') {
+                    status = 'Rejected';
+                } else if (app.status === 'Verified') {
+                    status = Math.random() > 0.3 ? 'Approved' : 'Pending';
+                } else {
+                    status = Math.random() > 0.7 ? 'Approved' : 
+                             Math.random() > 0.5 ? 'Rejected' : 'Pending';
+                }
+                
+                // Generate random dates for demo
+                const appDate = new Date(app.date || now);
+                const disbursementDate = new Date(appDate);
+                disbursementDate.setDate(appDate.getDate() + Math.floor(Math.random() * 7));
+                
+                const lastReviewDate = new Date(appDate);
+                lastReviewDate.setDate(appDate.getDate() + Math.floor(Math.random() * 5));
+                
+                // Rejection reasons
+                const rejectionReasons = [
+                    'Document Mismatch',
+                    'High Risk Score',
+                    'Suspicious Activity',
+                    'Income Insufficient',
+                    'Credit History'
+                ];
+                
+                return {
+                    id: app.id || 'APP-' + Math.floor(Math.random() * 10000),
+                    applicant: `${app.firstName || ''} ${app.lastName || ''}`.trim() || 'Unknown Applicant',
+                    amount: loanAmount,
+                    status,
+                    riskScore,
+                    riskCategory,
+                    date: disbursementDate.toISOString().split('T')[0],
+                    daysPending: status === 'Pending' ? daysBetween(appDate, now) : 0,
+                    rejectionReason: status === 'Rejected' ? 
+                        rejectionReasons[Math.floor(Math.random() * rejectionReasons.length)] : '',
+                    lastReview: lastReviewDate.toISOString().split('T')[0],
+                    applicationDate: appDate.toISOString().split('T')[0]
+                };
+            });
+        }
+        
+        // Function to update dashboard stats
+        function updateDisbursementStats(disbursements, period = 'month') {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            // Filter by period
+            let periodDisbursements = disbursements;
+            if (period === 'month') {
+                periodDisbursements = disbursements.filter(d => {
+                    const date = new Date(d.date);
+                    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+                });
+            } else if (period === 'week') {
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(now.getDate() - 7);
+                periodDisbursements = disbursements.filter(d => new Date(d.date) >= oneWeekAgo);
+            } else if (period === 'year') {
+                periodDisbursements = disbursements.filter(d => new Date(d.date).getFullYear() === currentYear);
             }
-        ];
-
-        function populateDisbursementTables() {
-            // Main disbursement table
+            
+            // Calculate stats
+            const approved = periodDisbursements.filter(d => d.status === 'Approved');
+            const pending = periodDisbursements.filter(d => d.status === 'Pending');
+            const rejected = periodDisbursements.filter(d => d.status === 'Rejected');
+            
+            const totalApprovedAmount = approved.reduce((sum, d) => sum + d.amount, 0);
+            const totalPendingAmount = pending.reduce((sum, d) => sum + d.amount, 0);
+            const totalRejectedAmount = rejected.reduce((sum, d) => sum + d.amount, 0);
+            
+            // Calculate trend (compare with previous period)
+            let trend = '0%';
+            if (period === 'month') {
+                const prevMonthDisbursements = disbursements.filter(d => {
+                    const date = new Date(d.date);
+                    return date.getMonth() === (currentMonth - 1 + 12) % 12 && 
+                           date.getFullYear() === (currentMonth === 0 ? currentYear - 1 : currentYear);
+                });
+                const prevMonthApproved = prevMonthDisbursements.filter(d => d.status === 'Approved');
+                const prevMonthAmount = prevMonthApproved.reduce((sum, d) => sum + d.amount, 0);
+                
+                if (prevMonthAmount > 0) {
+                    const change = ((totalApprovedAmount - prevMonthAmount) / prevMonthAmount) * 100;
+                    trend = `${change >= 0 ? '+' : ''}${Math.round(change)}%`;
+                }
+            }
+            
+            // Update DOM
+            document.getElementById('totalDisbursed').textContent = `$${totalApprovedAmount.toLocaleString()}`;
+            document.getElementById('pendingDisbursements').textContent = pending.length;
+            document.getElementById('pendingAmount').textContent = `$${totalPendingAmount.toLocaleString()} pending`;
+            document.getElementById('rejectedDisbursements').textContent = rejected.length;
+            document.getElementById('rejectedAmount').textContent = `$${totalRejectedAmount.toLocaleString()} rejected`;
+            document.getElementById('disbursementTrend').textContent = trend;
+            document.getElementById('disbursementPeriod').textContent = getPeriodLabel(period);
+            
+            // Update notification badge with pending count
+            document.getElementById('notificationCount').textContent = pending.length;
+        }
+        
+        // Function to populate disbursement tables
+        function populateDisbursementTables(disbursements) {
+            // Main disbursement table (sorted by date, newest first)
+            const sortedDisbursements = [...disbursements].sort((a, b) => 
+                new Date(b.date) - new Date(a.date));
+            
             const tbody = document.getElementById('disbursementTable').querySelector('tbody');
-            tbody.innerHTML = disbursementData.map(item => `
+            tbody.innerHTML = sortedDisbursements.slice(0, 10).map(item => `
                 <tr>
                     <td>${item.applicant}</td>
                     <td>$${item.amount.toLocaleString()}</td>
                     <td class="status-${item.status.toLowerCase()}">${item.status}</td>
-                    <td>${item.riskLevel}</td>
+                    <td>
+                        <span style="color: ${item.riskCategory === 'High' ? '#F44336' : 
+                                          item.riskCategory === 'Medium' ? '#FF9800' : '#4CAF50'}; 
+                                  font-weight: bold;">
+                            ${item.riskCategory}
+                        </span>
+                    </td>
                     <td>${item.date}</td>
                     <td>
-                        <button class="btn btn-sm btn-view">View</button>
-                        ${item.status === 'Pending' ? '<button class="btn btn-sm btn-review">Review</button>' : ''}
+                        <button class="btn btn-sm btn-view" data-id="${item.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${item.status === 'Pending' ? `
+                        <button class="btn btn-sm btn-review" data-id="${item.id}">
+                            <i class="fas fa-search"></i> Review
+                        </button>
+                        ` : ''}
                     </td>
                 </tr>
             `).join('');
             
-            // Pending table
-            const pendingTbody = document.getElementById('pendingTable').querySelector('tbody');
-            pendingTbody.innerHTML = disbursementData
+            // Pending table (sorted by days pending)
+            const pending = disbursements
                 .filter(item => item.status === 'Pending')
-                .map(item => `
+                .sort((a, b) => b.daysPending - a.daysPending);
+            
+            const pendingTbody = document.getElementById('pendingTable').querySelector('tbody');
+            pendingTbody.innerHTML = pending.map(item => `
                 <tr>
                     <td>${item.applicant}</td>
                     <td>$${item.amount.toLocaleString()}</td>
                     <td>${item.daysPending}</td>
-                    <td>${item.riskLevel}</td>
+                    <td>
+                        <span style="color: ${item.riskCategory === 'High' ? '#F44336' : 
+                                          item.riskCategory === 'Medium' ? '#FF9800' : '#4CAF50'}; 
+                                  font-weight: bold;">
+                            ${item.riskCategory} (${item.riskScore})
+                        </span>
+                    </td>
                     <td>${item.lastReview}</td>
                     <td>
-                        <button class="btn btn-sm btn-view">View</button>
-                        <button class="btn btn-sm btn-review">Approve</button>
+                        <button class="btn btn-sm btn-view" data-id="${item.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-primary" data-id="${item.id}">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-id="${item.id}">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
                     </td>
                 </tr>
             `).join('');
             
-            // Rejected table
-            const rejectedTbody = document.getElementById('rejectedTable').querySelector('tbody');
-            rejectedTbody.innerHTML = disbursementData
+            // Rejected table (sorted by date, newest first)
+            const rejected = disbursements
                 .filter(item => item.status === 'Rejected')
-                .map(item => `
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const rejectedTbody = document.getElementById('rejectedTable').querySelector('tbody');
+            rejectedTbody.innerHTML = rejected.map(item => `
                 <tr>
                     <td>${item.applicant}</td>
                     <td>$${item.amount.toLocaleString()}</td>
                     <td>${item.rejectionReason}</td>
-                    <td>${item.riskLevel}</td>
+                    <td>
+                        <span style="color: ${item.riskCategory === 'High' ? '#F44336' : 
+                                          item.riskCategory === 'Medium' ? '#FF9800' : '#4CAF50'}; 
+                                  font-weight: bold;">
+                            ${item.riskCategory} (${item.riskScore})
+                        </span>
+                    </td>
                     <td>${item.date}</td>
                     <td>
-                        <button class="btn btn-sm btn-view">View</button>
-                        <button class="btn btn-sm btn-review">Appeal</button>
+                        <button class="btn btn-sm btn-view" data-id="${item.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-primary" data-id="${item.id}">
+                            <i class="fas fa-redo"></i> Re-evaluate
+                        </button>
                     </td>
                 </tr>
             `).join('');
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appId = this.getAttribute('data-id');
+                    alert(`Viewing application ${appId}`);
+                });
+            });
+            
+            document.querySelectorAll('.btn-review').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appId = this.getAttribute('data-id');
+                    alert(`Reviewing application ${appId}`);
+                });
+            });
         }
-
-        // Initialize charts
-        function initCharts() {
-            // Disbursement Trends Chart
-            const trendsCtx = document.getElementById('disbursementTrendsChart').getContext('2d');
-            new Chart(trendsCtx, {
+        
+        // Function to update fraud indicators
+        function updateFraudIndicators(disbursements) {
+            const rejected = disbursements.filter(d => d.status === 'Rejected');
+            const totalRejected = rejected.length;
+            
+            // Calculate fraud indicator percentages (simulated for demo)
+            const indicators = {
+                'Multiple Account Disbursements': Math.min(100, Math.floor(Math.random() * 30) + 20),
+                'Unusual Timing Patterns': Math.min(100, Math.floor(Math.random() * 25) + 15),
+                'Account Mismatch': Math.min(100, Math.floor(Math.random() * 20) + 10),
+                'Duplicate Applications': Math.min(100, Math.floor(Math.random() * 15) + 5)
+            };
+            
+            // Update DOM
+            const container = document.getElementById('fraudIndicators');
+            container.innerHTML = Object.entries(indicators).map(([name, value]) => `
+                <div class="fraud-type">
+                    <span class="fraud-type-name">${name}</span>
+                    <span class="fraud-type-value">${value}%</span>
+                </div>
+                <div class="fraud-type-bar">
+                    <div class="fraud-type-progress" style="width: ${value}%;"></div>
+                </div>
+            `).join('');
+        }
+        
+        // Function to create/update disbursement trends chart
+        function updateDisbursementTrendsChart(disbursements, period = 'month') {
+            const ctx = document.getElementById('disbursementTrendsChart').getContext('2d');
+            const now = new Date();
+            
+            // Prepare data based on period
+            let labels, approvedData, rejectedData;
+            
+            if (period === 'month') {
+                // Last 30 days
+                labels = [];
+                approvedData = [];
+                rejectedData = [];
+                
+                for (let i = 29; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    
+                    const dayApproved = disbursements.filter(d => 
+                        d.status === 'Approved' && d.date === dateStr).length;
+                    approvedData.push(dayApproved);
+                    
+                    const dayRejected = disbursements.filter(d => 
+                        d.status === 'Rejected' && d.date === dateStr).length;
+                    rejectedData.push(dayRejected);
+                }
+            } else if (period === 'week') {
+                // Last 7 days
+                labels = [];
+                approvedData = [];
+                rejectedData = [];
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+                    
+                    const dayApproved = disbursements.filter(d => 
+                        d.status === 'Approved' && d.date === dateStr).length;
+                    approvedData.push(dayApproved);
+                    
+                    const dayRejected = disbursements.filter(d => 
+                        d.status === 'Rejected' && d.date === dateStr).length;
+                    rejectedData.push(dayRejected);
+                }
+            } else {
+                // Yearly - by month
+                labels = [];
+                approvedData = [];
+                rejectedData = [];
+                
+                for (let i = 11; i >= 0; i--) {
+                    const month = (now.getMonth() - i + 12) % 12;
+                    const year = now.getFullYear() - (now.getMonth() - i < 0 ? 1 : 0);
+                    
+                    labels.push(new Date(year, month, 1).toLocaleDateString('en-US', { month: 'short' }));
+                    
+                    const monthApproved = disbursements.filter(d => {
+                        const date = new Date(d.date);
+                        return date.getMonth() === month && 
+                               date.getFullYear() === year &&
+                               d.status === 'Approved';
+                    }).length;
+                    approvedData.push(monthApproved);
+                    
+                    const monthRejected = disbursements.filter(d => {
+                        const date = new Date(d.date);
+                        return date.getMonth() === month && 
+                               date.getFullYear() === year &&
+                               d.status === 'Rejected';
+                    }).length;
+                    rejectedData.push(monthRejected);
+                }
+            }
+            
+            // Destroy previous chart if it exists
+            if (disbursementTrendsChart) {
+                disbursementTrendsChart.destroy();
+            }
+            
+            // Create new chart
+            disbursementTrendsChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: labels,
                     datasets: [{
                         label: 'Approved Disbursements',
-                        data: [120000, 150000, 180000, 160000, 200000, 225000],
+                        data: approvedData,
                         borderColor: '#4CAF50',
                         backgroundColor: 'rgba(76, 175, 80, 0.1)',
                         tension: 0.3,
                         fill: true
                     }, {
                         label: 'Rejected Disbursements',
-                        data: [40000, 60000, 75000, 90000, 85000, 100000],
+                        data: rejectedData,
                         borderColor: '#F44336',
                         backgroundColor: 'rgba(244, 67, 54, 0.1)',
                         tension: 0.3,
@@ -925,24 +1171,58 @@
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
-                                    return '$' + value.toLocaleString();
-                                }
+                                precision: 0
                             }
                         }
                     }
                 }
             });
+        }
+        
+        // Function to create/update fraud patterns chart
+        function updateFraudPatternsChart(disbursements) {
+            const ctx = document.getElementById('fraudPatternsChart').getContext('2d');
+            const rejected = disbursements.filter(d => d.status === 'Rejected');
             
-            // Fraud Patterns Chart
-            const fraudCtx = document.getElementById('fraudPatternsChart').getContext('2d');
-            new Chart(fraudCtx, {
+            // Count reasons (simulated for demo)
+            const reasons = {
+                'Document Mismatch': 0,
+                'High Risk Score': 0,
+                'Suspicious Activity': 0,
+                'Income Insufficient': 0,
+                'Credit History': 0
+            };
+            
+            rejected.forEach(d => {
+                if (reasons.hasOwnProperty(d.rejectionReason)) {
+                    reasons[d.rejectionReason]++;
+                }
+            });
+            
+            // Convert to percentages
+            const totalRejected = rejected.length;
+            Object.keys(reasons).forEach(key => {
+                reasons[key] = totalRejected > 0 ? Math.round((reasons[key] / totalRejected) * 100) : 0;
+            });
+            
+            // Sort by frequency
+            const sortedReasons = Object.entries(reasons)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 4); // Top 4 reasons
+            
+            // Destroy previous chart if it exists
+            if (fraudPatternsChart) {
+                fraudPatternsChart.destroy();
+            }
+            
+            // Create new chart
+            fraudPatternsChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Multiple Accounts', 'Timing Patterns', 'Account Mismatch', 'Duplicate Apps'],
+                    labels: sortedReasons.map(r => r[0]),
                     datasets: [{
-                        label: 'Fraud Cases',
-                        data: [42, 35, 28, 22],
+                        label: 'Percentage of Rejected Applications',
+                        data: sortedReasons.map(r => r[1]),
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.7)',
                             'rgba(54, 162, 235, 0.7)',
@@ -968,7 +1248,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return context.parsed.y + '% of cases';
+                                    return context.parsed.y + '% of rejections';
                                 }
                             }
                         }
@@ -987,7 +1267,25 @@
                 }
             });
         }
-
+        
+        // Function to load and process data
+        function loadDisbursementData(period = 'month') {
+            // Get applications from localStorage
+            const applications = JSON.parse(localStorage.getItem('loanApplications')) || [];
+            
+            // Process into disbursement data
+            const disbursements = processDisbursementData(applications);
+            
+            // Update all dashboard elements
+            updateDisbursementStats(disbursements, period);
+            populateDisbursementTables(disbursements);
+            updateDisbursementTrendsChart(disbursements, period);
+            updateFraudPatternsChart(disbursements);
+            updateFraudIndicators(disbursements);
+            
+            return disbursements;
+        }
+        
         // Tab functionality
         function setupTabs() {
             const tabs = document.querySelectorAll('.tab');
@@ -1004,12 +1302,53 @@
                 });
             });
         }
-
+        
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            populateDisbursementTables();
-            initCharts();
+            // Load initial data
+            loadDisbursementData();
             setupTabs();
+            
+            // Set up refresh buttons
+            document.getElementById('refreshDisbursements').addEventListener('click', () => {
+                loadDisbursementData();
+            });
+            
+            document.getElementById('refreshPending').addEventListener('click', () => {
+                loadDisbursementData();
+            });
+            
+            document.getElementById('refreshRejected').addEventListener('click', () => {
+                loadDisbursementData();
+            });
+            
+            // Set up period switching
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const period = this.getAttribute('data-period');
+                    loadDisbursementData(period);
+                });
+            });
+            
+            // Set up search
+            document.querySelector('.search-bar button').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const applications = JSON.parse(localStorage.getItem('loanApplications')) || [];
+                const filteredApps = applications.filter(app => 
+                    (app.firstName + ' ' + app.lastName).toLowerCase().includes(searchTerm) ||
+                    (app.id && app.id.toLowerCase().includes(searchTerm))
+                );
+                
+                const disbursements = processDisbursementData(filteredApps);
+                populateDisbursementTables(disbursements);
+            });
+            
+            // Listen for storage changes (from other tabs)
+            window.addEventListener('storage', function() {
+                loadDisbursementData();
+            });
         });
     </script>
 </body>
