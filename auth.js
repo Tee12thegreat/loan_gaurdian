@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const registerLink = document.getElementById('registerLink');
-    
-    // Sample user data (in a real app, this would come from a server)
+
     const users = [
         { email: "admin@loanguardian", password: "admin123", role: "admin", name: "Tee" },
         { email: "officer@loanguardian", password: "officer123", role: "loan-officer", name: "Loan Officer" },
